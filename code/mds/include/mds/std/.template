@@ -1,0 +1,14 @@
+#pragma once
+#include <mds/genmod.h>
+
+typedef struct {
+    Module _minfo;
+
+} NAME_OF_MOD;
+NAME_OF_MOD __main_struct;
+
+void __main_setup(){
+    __main_struct._minfo = mModuleNew("NAME_OF_MOD");
+}
+
+#define ?_INJECT_MOD {__main_struct._minfo, &__main_struct}

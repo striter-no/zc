@@ -1,0 +1,6 @@
+dev
+vscode
+.cache
+bin
+compile_commands.json
+.clangd
