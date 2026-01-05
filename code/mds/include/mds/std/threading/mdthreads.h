@@ -38,8 +38,8 @@ static void *__thr_worker_interface(void *_args){
         delvar(val);
     });
     __kvtable_free(args->args);
-    args->_main_pointer->absa->free(args->_main_pointer->absa, args->args);
-    args->_main_pointer->absa->free(args->_main_pointer->absa, args);
+    args->_main_pointer->absa->free(args->_main_pointer->absa->real, args->args);
+    args->_main_pointer->absa->free(args->_main_pointer->absa->real, args);
     return NULL;
 }
 

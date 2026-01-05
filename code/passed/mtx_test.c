@@ -4,19 +4,15 @@
 #include <mds/modules.h>
 #include <mds/core_impl.h>
 
-std_kvtable skv;
-term_io      io;
-std_mutex   mtxm;
-
 Mutex *mtx;
 i32   counter = 0;
 
 option worker(kvtable args);
 option fmain(variable *args, size_t argc){
     var thr = std.threading;
-    io  = std.io.term;
-    skv = std.kvtable;
-    mtxm = std.mutex;
+    var io  = std.io.term;
+    var skv = std.kvtable;
+    var mtxm = std.mutex;
 
     mtx = try(mtxm.create(MUTEX_PLAIN)).data;
     Thread *handles[] = {
@@ -35,6 +31,7 @@ option fmain(variable *args, size_t argc){
 }
 
 option worker(kvtable args){
+    var mtxm = std.mutex;
     for (size_t i = 0; i < 1000000; i++){
         try(mtxm.lock(mtx));
         counter++;

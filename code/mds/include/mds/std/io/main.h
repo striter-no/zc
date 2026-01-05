@@ -15,8 +15,8 @@ typedef struct {
     option (*swrite)(stream str, u8* data, size_t actual_sz);
     option (*aio_sread)(stream str);
     option (*aio_swrite)(stream str, u8* data, size_t actual_sz);
-} stream_io;
-stream_io __stream_io;
+} std_io_stream;
+std_io_stream __std_io_stream;
 
 typedef struct {
     Module _minfo;
@@ -27,8 +27,8 @@ typedef struct {
     option (*add)(epoller eplr, int fd_to_add, u32 events, void *dataptr);
     option (*delete)(epoller eplr, int fd_to_del);
     option (*waitev)(epoller *eplr, int timeout);
-} epoll_io;
-epoll_io __epoll_io;
+} std_io_epoll;
+std_io_epoll __std_io_epoll;
 
 typedef struct {
     Module _minfo;
@@ -36,35 +36,35 @@ typedef struct {
     void (*print)(const char*, ...);
     void (*println)(const char*, ...);
     option (*input)(const char *queue);
-} term_io;
-term_io __term_io;
+} std_io_term;
+std_io_term __std_io_term;
 
 
 void __si_setup(){
     __ansi_setup();
 
-    __term_io._minfo = mModuleNew("std.io.term");
-    __term_io.print = __print;
-    __term_io.println = __println;
-    __term_io.input = __input;
+    __std_io_term._minfo = mModuleNew("std.io.term");
+    __std_io_term.print = __print;
+    __std_io_term.println = __println;
+    __std_io_term.input = __input;
 
-    __stream_io._minfo = mModuleNew("std.io.sio");
-    __stream_io.openStream = __openStream;
-    __stream_io.swrite = __swrite;
-    __stream_io.sread = __sread;
-    __stream_io.aio_swrite = __aio_swrite;
-    __stream_io.aio_sread = __aio_sread;
-    __stream_io.closeStream = __closeStream;
+    __std_io_stream._minfo = mModuleNew("std.io.sio");
+    __std_io_stream.openStream = __openStream;
+    __std_io_stream.swrite = __swrite;
+    __std_io_stream.sread = __sread;
+    __std_io_stream.aio_swrite = __aio_swrite;
+    __std_io_stream.aio_sread = __aio_sread;
+    __std_io_stream.closeStream = __closeStream;
 
-    __epoll_io._minfo = mModuleNew("std.io.epoll");
-    __epoll_io.init = __epoller_init;
-    __epoll_io.close = __epoller_close;
-    __epoll_io.modify = __epoller_modify;
-    __epoll_io.add = __epoller_add;
-    __epoll_io.delete = __epoller_delete;
-    __epoll_io.waitev = __epoller_waitev;
+    __std_io_epoll._minfo = mModuleNew("std.io.epoll");
+    __std_io_epoll.init = __epoller_init;
+    __std_io_epoll.close = __epoller_close;
+    __std_io_epoll.modify = __epoller_modify;
+    __std_io_epoll.add = __epoller_add;
+    __std_io_epoll.delete = __epoller_delete;
+    __std_io_epoll.waitev = __epoller_waitev;
 }
 
-#define TERMIO_INJECT_MOD {__term_io._minfo, &__term_io}
-#define STREAMIO_INJECT_MOD {__epoll_io._minfo, &__epoll_io}
-#define EPOLLIO_INJECT_MOD {__stream_io._minfo, &__stream_io}
+#define TERMIO_INJECT_MOD {__std_io_term._minfo, &__std_io_term}
+#define STREAMIO_INJECT_MOD {__std_io_epoll._minfo, &__std_io_epoll}
+#define EPOLLIO_INJECT_MOD {__std_io_stream._minfo, &__std_io_stream}

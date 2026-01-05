@@ -69,7 +69,7 @@ option __tcp_serv_accept(struct TCPServSocket *sock){
     if (!sock) throw(    "Cannot accept client on server, *sock ptr is NULL",    "ServSock.Accept.NULL_ptr",    -1
     );
 
-    struct TCPServClient *cli = try(sock->absa->alloc(sock->absa, sizeof(struct TCPServClient))).data;
+    struct TCPServClient *cli = try(sock->absa->alloc(sock->absa->real, sizeof(struct TCPServClient))).data;
     if (!cli) throw(    "Cannot accept new client, malloc failed",    "ServSock.Accept.Malloc.Failed",    -2
     );
 

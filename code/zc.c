@@ -100,7 +100,7 @@ option fmain(variable *args, size_t argc){
                 "-std=c2x "
                 "-Dmain_file=%s.c "
                 "-D_GNU_SOURCE "
-                // "-fsanitize=undefined,address "
+                "-fsanitize=undefined,address "
                 "-O0 -g -o " //-Wall -Wextra 
                 "./bin/%s "
                 "./code/mds/subcode/main.c "

@@ -207,7 +207,7 @@ option __std_str_selfsum(String *self, String other){
 }
 
 option __std_str_fromarr(array arr){
-    String *out = try(arr.absa->alloc(arr.absa, sizeof(String))).data;
+    String *out = try(arr.absa->alloc(arr.absa->real, sizeof(String))).data;
     if (!out) throw(
         "Std.Str: failed to get string from array, malloc() failed",
         "Std.Str.FromArray.Malloc.Failed",
@@ -226,7 +226,7 @@ option __std_str_fromarr(array arr){
     );
     out->len = arr.len - 1;
     if (!out->data.data){
-        try(arr.absa->free(arr.absa, out));
+        try(arr.absa->free(arr.absa->real, out));
         throw(
         "Std.Str: failed to get string from array, malloc(2) failed",
         "Std.Str.FromArray.Malloc.2.Failed",

@@ -63,7 +63,7 @@ option __alc_gpa_allocate(GeneralPurposeAllocator *allc, size_t bytes){
     void *data = malloc(bytes);
     if (!data) throw("GeneralPurposeAllocator: cannot allocate bytes, malloc() failed", "GeneralPurposeAllocator.Alloc.Malloc.Failed", -2);
 
-    // fprintf(stderr, "gpa (%p) allocating %zu bytes (ht: %p)\n", allc, bytes, allc->pointers);
+    fprintf(stderr, "gpa (%p) allocating %zu bytes (ht: %p)\n", allc, bytes, allc->pointers);
     try(__hsht_set(allc->pointers, mvar(
         data, 0, false
     ), mvar(

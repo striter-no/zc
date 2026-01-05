@@ -1,14 +1,6 @@
-#include "mds/std/_preincl/base/preproc.h"
-#include "mds/std/threading/arguments.h"
-#include "mds/std/threading/main.h"
-#include "mds/std/threading/mutexes.h"
+#include <mds/core_impl.h>
 #include <mds/modules.h>
 
-std_kvtable skv;
-std_io      io;
-std_condt   cndm;
-std_awaiter awtm;
-std_time    tmm;
 
 Condt   *cnd;
 Awaiter *awt;
@@ -16,12 +8,12 @@ Awaiter *awt;
 option consumer(kvtable args);
 option producer(kvtable args);
 option fmain(variable *args, size_t argc){
-    var thr = *(std_threads*)mInclude(std.threading);
-    io  =     *(std_io*)     mInclude(std.io);
-    skv =     *(std_kvtable*)mInclude(std.kvtable);
-    awtm =    *(std_awaiter*)mInclude(std.awaiter);
-    tmm =     *(std_time*)   mInclude(std.time);
-    cndm =    *(std_condt*)  mInclude(std.condt);
+    var thr = std.threading;
+    var io  = std.io.term;
+    var skv = std.kvtable;
+    var awtm = std.awaiter;
+    var tmm = std.time;
+    var cndm = std.condt;
 
     cnd = try(cndm.create()).data;
     awt = try(awtm.create(cnd, MUTEX_PLAIN)).data;

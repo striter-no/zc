@@ -32,7 +32,7 @@ option __testing_main(variable *args, size_t argc){
 }
 
 option pre_setup(){
-    // std.io.term.println("presetup() now");
+    std.io.term.println("[globals: %p]", &global);
 
     pmain.allc_raw = std.mem.allc.raw.init();
     pmain.absa_raw = __mem_std_create_absallc(
@@ -63,7 +63,7 @@ option pre_setup(){
     // );
     // try(global.save(".absa", np(&pmain.absa_bsc)));
     try(global.save(".absa", np(&pmain.absa)));
-    // std.io.term.println("allc_bsc info: %p, pointers: %p %%p", &pmain.absa, pmain.allc_gpa->pointers);
+    std.io.term.println("allc_gpa info: %p, pointers: %p real: %p", &pmain.absa, pmain.allc_gpa->pointers, pmain.absa.real);
     
     // std.io.term.println("presetup()");
     return noerropt;

@@ -1,24 +1,10 @@
-#include <mds/std/_preincl/base.h>
-#include <mds/std/containers/main.h>
+#include <mds/core_impl.h>
 #include <mds/modules.h>
 
-std_io      io;
-std_fmt     fmt;
-std_array   arrm;
-std_kvtable kvt;
-std_queue   qu;
-std_htable  htm;
+$test(arrays){
+    var io = std.io.term;
+    var arrm = std.array;
 
-void load_mods(){
-    io   = *(std_io*)     mInclude(std.io);
-    arrm = *(std_array*)  mInclude(std.array);
-    fmt  = *(std_fmt*)    mInclude(std.fmt);
-    kvt  = *(std_kvtable*)mInclude(std.kvtable);
-    qu   = *(std_queue*)  mInclude(std.queue);
-    htm  = *(std_htable*) mInclude(std.htable);
-}
-
-option test_arrays(){
     var arr = arrm.new();
     io.println("Array size now: %zu", arr.len);
 
@@ -57,7 +43,10 @@ option test_arrays(){
     return noerropt;
 }
 
-option test_kvtable(){
+$test(kvtable){
+    var io = std.io.term;
+    var kvt = std.kvtable;
+
     kvtable table = kvt.new();
     io.println("Table size: %zu", table.len);
 
@@ -82,7 +71,10 @@ option test_kvtable(){
     return noerropt;
 }
 
-option test_queue(){
+$test(queue){
+    var qu = std.queue;
+    var io = std.io.term;
+
     queue q = qu.new();
     io.println("Queue size: %zu", q.len);
     try(qu.push(&q, nv(12)));
@@ -98,7 +90,8 @@ option test_queue(){
     return noerropt;
 }
 
-option test_htable(){
+$test(htable){
+    var htm = std.htable;
     hashtable* ht = try(htm.new()).data;
 
     for (int i = 0; i < 2000; i++) {
@@ -113,33 +106,5 @@ option test_htable(){
     
     htm.free(ht, NULL, NULL);
     free(ht);
-    return noerropt;
-}
-
-option fmain(variable *args, size_t argc){
-    load_mods();
-    
-    option result;
-
-    result = test_arrays();
-    is_error(result) ? 
-        io.println("FAILED arrays test: %s", gerror(result).message): 
-        io.println("PASSED arrays test"); // Passed
-    
-    result = test_kvtable();
-    is_error(result) ? 
-        io.println("FAILED kvtable test: %s", gerror(result).message): 
-        io.println("PASSED kvtable test"); // Passed
-
-    result = test_queue();
-    is_error(result) ? 
-        io.println("FAILED queue test: %s", gerror(result).message): 
-        io.println("PASSED queue test"); // Passed
-
-    result = test_htable();
-    is_error(result) ? 
-        io.println("FAILED htable test: %s", gerror(result).message): 
-        io.println("PASSED htable test"); // Passed
-
     return noerropt;
 }

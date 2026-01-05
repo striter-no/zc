@@ -3,9 +3,9 @@
 
 struct __core {
     struct {
-        stream_io sio;
-        term_io   term;
-        epoll_io  epoll;
+        std_io_stream sio;
+        std_io_term   term;
+        std_io_epoll  epoll;
     } io;
 
     struct {
@@ -46,6 +46,7 @@ struct __core {
     std_kvtable kvtable;
     std_queue   queue;
     std_htable  htable;
+    std_time    time;
 };
 
 extern struct __core std;
@@ -62,9 +63,11 @@ void __std_setup(){
     std.kvtable = *(std_kvtable*)mInclude(std.kvtable);
     std.queue = *(std_queue*)mInclude(std.queue);
     std.htable = *(std_htable*)mInclude(std.htable);
-    std.io.sio = *(stream_io*)mInclude(std.io.sio);
-    std.io.term = *(term_io*)mInclude(std.io.term);
-    std.io.epoll = *(epoll_io*)mInclude(std.io.epoll);
+    std.time   = *(std_time*)mInclude(std.time);
+
+    std.io.sio = *(std_io_stream*)mInclude(std.io.sio);
+    std.io.term = *(std_io_term*)mInclude(std.io.term);
+    std.io.epoll = *(std_io_epoll*)mInclude(std.io.epoll);
     std.net.tcp.client = *(tcp_cli*)mInclude(std.net.tcp.client);
     std.net.tcp.server = *(tcp_serv*)mInclude(std.net.tcp.server);
 

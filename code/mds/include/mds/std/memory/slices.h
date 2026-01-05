@@ -42,11 +42,11 @@ Slice __std_mem_slice(void *data, size_t el_size, size_t start_inx, size_t end_i
 }
 
 option __std_mem_copy_slice(Slice origin){
-    Slice *output = try(origin.absa->alloc(origin.absa, sizeof(Slice))).data;
+    Slice *output = try(origin.absa->alloc(origin.absa->real, sizeof(Slice))).data;
     if (!output) throw(    "Std.Mem.Slice: cannot make copy of the slice, malloc() failed",    "Std.Mem.Slice.SliceCopy.Malloc.Failed",    -1
     );
 
-    void *copied = try(origin.absa->alloc(origin.absa, origin.slice_size * (origin.raw ? 1: origin.el_size))).data;
+    void *copied = try(origin.absa->alloc(origin.absa->real, origin.slice_size * (origin.raw ? 1: origin.el_size))).data;
     if (!copied) throw(    "Std.Mem.Slice: cannot make copy of the slice, malloc(2) failed",    "Std.Mem.Slice.SliceCopy.Malloc.2.Failed",    -2
     );
     
@@ -70,7 +70,7 @@ option __std_mem_slice_as_array(Slice slice){
     if (slice.raw) throw(    "Std.Mem.Slice: cannot create array from raw slice",    "Std.Mem.Slice.AsArray.RawSlice",    1
     );
 
-    array *out = try(slice.absa->alloc(slice.absa, sizeof(array))).data;
+    array *out = try(slice.absa->alloc(slice.absa->real, sizeof(array))).data;
     if (!out) throw(    "Std.Mem.Slice: cannot create array from slice, malloc() failed",    "Std.Mem.Slice.AsArray.Malloc.Failed",    -1
     );
 
@@ -98,7 +98,7 @@ Slice __std_mem_sliceraw(void *data, size_t start_offset, size_t end_offset){
 }
 
 option __std_mem_slice_fromraw(Slice raw, size_t el_size){
-    Slice *output = try(raw.absa->alloc(raw.absa, sizeof(Slice))).data;
+    Slice *output = try(raw.absa->alloc(raw.absa->real, sizeof(Slice))).data;
     if (!output) throw(    "Std.Mem.Slice: cannot convert raw slice (fromraw), malloc() failed",    "Std.Mem.Slice.FromRaw.Malloc.Failed",    -1
     );
     try(__std_mem_slice_convraw(output, el_size));
@@ -109,10 +109,10 @@ option __std_mem_free_slice(Slice *slice){
     if(!slice) return noerropt;
 
     if (slice->copy && slice->data) 
-        try(slice->absa->free(slice->absa, slice->data));
+        try(slice->absa->free(slice->absa->real, slice->data));
     
     if(slice->copy) 
-        try(slice->absa->free(slice->absa, slice));
+        try(slice->absa->free(slice->absa->real, slice));
     return noerropt;
 }
 

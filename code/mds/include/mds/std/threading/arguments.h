@@ -23,7 +23,7 @@ kvtable __unwrap_args(Arguments args);
     sizeof((ArgumentField[]){__VA_ARGS__}) / sizeof(ArgumentField) \
 )
 
-#define nothrargs create_args(NULL, 0)
+#define nothrargs try(create_args(NULL, 0))
 
 #ifdef ARGUMENTS_IMPLEMENTATION
 
@@ -59,7 +59,7 @@ option free_args(Arguments *args){
         for (size_t i = 0; i < args->count; i++){
             delvar(&args->fields[i].value);
         }
-        try(args->absa->free(args->absa, args->fields));
+        try(args->absa->free(args->absa->real, args->fields));
         args->fields = NULL;
     }
     args->count = 0;
