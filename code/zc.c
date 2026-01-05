@@ -30,6 +30,81 @@ const char *GENERAL_ROOT =
 "    pmain._minfo = mModuleNew(\"main\");\n"
 "}\n";
 
+const char *GENERAL_SUBCODE = 
+"#define FILES_IMPLEMENTATION\n"
+"#define DIRECTORIES_IMPLEMENTATION\n"
+"#define FS_IMPLEMENTATION\n"
+"#define GENERAL_IMPLEMENTATION\n"
+"#define MDTHREADS_IMPLEMENTATION\n"
+"#define CONDITIONS_IMPLEMENTATION\n"
+"#define AWAITER_IMPLEMENTATION\n"
+"#define ARGUMENTS_IMPLEMENTATION\n"
+"#define MUTEXES_IMPLEMENTATION\n"
+"#define OSFUNCS_IMPLEMENTATION\n"
+"#define SIGNALS_IMPLEMENTATION\n"
+"#define HASHTABLE_IMPLEMENTATION\n"
+"#define QUEUE_IMPLEMENTATION\n"
+"#define TABLE_IMPLEMENTATION\n"
+"#define ARRAY_IMPLEMENTATION\n"
+"#define TOKENIZER_IMPLEMENTATION\n"
+"#define SLICES_IMPLEMENTATION\n"
+"#define SENTINEL_IMPLEMENTATION\n"
+"#define GENERALPURPOSE_IMPLEMENTATION\n"
+"#define ARENA_IMPLEMENTATION\n"
+"#define BASIC_IMPLEMENTATION\n"
+"#define TCP_SERVER_IMPLEMENTATION\n"
+"#define TCP_CLIENT_IMPLEMENTATION\n"
+"#define HASH_IMPLEMENTATION\n"
+"#define FMT_IMPLEMENTATION\n"
+"#define STRINGS_IMPLEMENTATION\n"
+"#define TIMING_IMPLEMENTATION\n"
+"#define TERM_IMPLEMENTATION\n"
+"#define COLORS_IMPLEMENTATION\n"
+"#define POLLING_IMPLEMENTATION\n"
+"#define STREAM_IMPLEMENTATION\n"
+"#define RANDOM_IMPLEMENTATION\n"
+"#define OPTION_IMPLEMENTATION\n"
+"#define VARIABLE_IMPLEMENTATION\n"
+"#define GLOBALS_IMPLEMENTATION\n"
+"\n"
+"#include \"../../root.h\"\n"
+"#include <mds/std/_preincl/base.h>\n"
+"#include <mds/std/_preincl/globals.h>\n"
+"#include <mds/core.h>\n"
+"\n"
+"int main(int argc, char *argv[]){\n"
+"    __global_init();\n"
+"    __mods_setup();\n"
+"    \n"
+"    variable *arguments = malloc(sizeof(variable) * argc);\n"
+"    if (!arguments) panic(\"[libc part] failed to allocate memory for arguments\");\n"
+"    for (int i = 0; i < argc; i ++){\n"
+"        arguments[i].data = argv[i];\n"
+"        arguments[i].size = 1 + strlen(argv[i]);\n"
+"    }\n"
+"\n"
+"    psetup();\n"
+"    __core_setup();\n"
+"    option ret = pmain.main(arguments, argc);\n"
+"    free(arguments);\n"
+"    free(modules_table);\n"
+"    __global_deinit();\n"
+"\n"
+"    if (ret.tag == OPT_ERROR_TYPE){\n"
+"        fprintf(\n"
+"            stderr, \n"
+"            \"\\n==============\\nprogram exited with error:\n%s: %s\\n\", \n"
+"            ret.variant.err.type,\n"
+"            ret.variant.err.message\n"
+"        );\n"
+"        __print_stacktrace(stderr);\n"
+"        return ret.variant.err.code;\n"
+"    }\n"
+"    \n"
+"    return 0;\n"
+"}\n";
+
+
 const char *GENERAL_MAIN = 
 "#include <mds/core_impl.h>\n"
 "#include <mds/modules.h>\n\n"
@@ -142,6 +217,7 @@ option fmain(variable *args, size_t argc){
             try(fmt.format("code/%s/src", args[2].data)).data,
             try(fmt.format("bin")).data,
             try(fmt.format("dev")).data,
+            try(fmt.format("./code/%s/subcode")).data
         };
 
         for (size_t i = 0; i < sizeof(st) / sizeof(st[0]); i++){
@@ -159,6 +235,11 @@ option fmain(variable *args, size_t argc){
         File *main = try(fs.fileopen("code/main.c", "w")).data;
         std.io.sio.swrite(main->selfstr, (u8*)GENERAL_MAIN, strlen(GENERAL_MAIN));
         fs.fileclose(main);
+
+        io.println("[zc] creating code/%s/subcode/main.c", args[2].data);
+        File *submain = try(fs.fileopen(try(fmt.format("code/%s/subcode/main.c", args[2].data)).data, "w")).data;
+        std.io.sio.swrite(submain->selfstr, (u8*)GENERAL_SUBCODE, strlen(GENERAL_SUBCODE));
+        fs.fileclose(submain);
 
         io.println("[zc] creating .clangd");
         char *formated_clangd = try(fmt.format(GENERAL_CLANGD, args[2].data)).data;
