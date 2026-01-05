@@ -70,6 +70,7 @@ option pre_setup(){
     // std.io.term.println("allc_gpa info: %p, pointers: %p real: %p", &pmain.absa, pmain.allc_gpa->pointers, pmain.absa.real);
     
     // std.io.term.println("presetup()");
+    try(__galc_init());
     return noerropt;
 }
 
@@ -97,6 +98,7 @@ option post_function(){
     if (is_error(r)) std.io.term.println("\n===============\nend: %s:%s (%zu, %zu)", gerror(r).type, gerror(r).message, pmain.allc_raw.freed, pmain.allc_raw.allocated);
     #endif
 
+    __galc_end();
     return noerropt;
 }
 

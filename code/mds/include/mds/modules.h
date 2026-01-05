@@ -3,6 +3,7 @@
 
 #include "mods.h"
 #include "genmod.h"
+#include "gallc.h"
 
 #define INJECTION(LC_INJ) {{modules_table[counter++] = (struct ModInfo)LC_INJ; if (counter % 10 == 0 && counter != 0){modules_table = realloc(modules_table, sizeof(struct ModInfo) * counter * 2);}}}
 
