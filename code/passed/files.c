@@ -1,3 +1,5 @@
+// #define DEBUG_VERBOSE
+
 #include <mds/core_impl.h>
 #include <mds/modules.h>
 
@@ -26,7 +28,7 @@ $test(open){
 
     io.println("File size: %zu/%zu (%zu)", content.size, file->size);
     io.println("File content: %s", content.data);
-    delvar(&content);
+    // delvar(&content);
     
     fs.fileclose(file);
     return noerropt;
@@ -39,7 +41,7 @@ $test(current_dir){
     
     io.println("Current directory: %s", cwd->path);
     
-    free(cwd);
+    // free(cwd);
     return noerropt;
 }
 
@@ -57,11 +59,11 @@ $test(list_files){
         io.println("File: %s (%zu bytes)", file->filename, file->size);
     return 1;});
 
-    arm.dfclean(files, lambda(variable *v){free(v->data);});
-    arm.free(files);
+    // arm.dfclean(files, lambda(variable *v){free(v->data);});
+    // arm.free(files);
 
-    free(files);
-    free(cwd);
+    // free(files);
+    // free(cwd);
     return noerropt;
 }
 
@@ -69,7 +71,8 @@ $test(list_files_dummy){
     var io = std.io.term;
     var fs = std.fs;
     var arm = std.array;
-    var cwd = (Directory*)try(fs.cwd()).data;
+    // var cwd = (Directory*)try(fs.cwd()).data;
+    var cwd = (Directory*)try(fs.dummydir("./test")).data;
 
     array *files = try(fs.list_files(cwd, false)).data;
     
@@ -80,7 +83,7 @@ $test(list_files_dummy){
     return 1;});
 
     fs.freefiles(files);
-    free(cwd);
+    // free(cwd);
     return noerropt;
 }
 
@@ -97,7 +100,7 @@ $test(list_files_recursive){
         io.println("File: %s (%zu bytes)", file->filename, file->size);
     return 1;});
     
-    fs.freefiles(files);
-    free(cwd);
+    // fs.freefiles(files);
+    // free(cwd);
     return noerropt;
 }

@@ -8,7 +8,7 @@
 typedef struct {
     Module _minfo;
 
-    option (*spawn)(option (*worker)(kvtable args), const Arguments args);
+    option (*spawn)(option (*worker)(kvtable args), Arguments *args);
     option (*exit)(void *retval);
     option (*join)(Thread thrd);
     option (*detach)(Thread *thrd);

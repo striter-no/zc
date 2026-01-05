@@ -5,7 +5,7 @@
 #include <mds/std/_preincl/globals.h>
 #include <mds/std/memory/allocators/abstract.h>
 #include <string.h>
-#include <stdlib.h>
+
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <poll.h>

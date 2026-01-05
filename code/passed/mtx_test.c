@@ -11,13 +11,12 @@ option worker(kvtable args);
 option fmain(variable *args, size_t argc){
     var thr = std.threading;
     var io  = std.io.term;
-    var skv = std.kvtable;
     var mtxm = std.mutex;
 
     mtx = try(mtxm.create(MUTEX_PLAIN)).data;
     Thread *handles[] = {
-        (Thread*)try(thr.spawn(worker, nothrargs)).data,
-        (Thread*)try(thr.spawn(worker, nothrargs)).data
+        (Thread*)try(thr.spawn(worker, nothrargs.data)).data,
+        (Thread*)try(thr.spawn(worker, nothrargs.data)).data
     };
 
     try(thr.join(*handles[0]));

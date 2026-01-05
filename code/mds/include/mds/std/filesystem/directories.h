@@ -89,9 +89,9 @@ option __fs_listDirFiles(Directory *zcdir, bool recursive){
                 ));
             }
             
-            __array_free(tmp);
-            free(tmp);
-            free(subdir);
+            try(__array_free(tmp));
+            try(absa->free(absa->real, tmp));
+            try(absa->free(absa->real, subdir));
         }
         
         if (!S_ISREG(file_stat.st_mode)) continue;
@@ -118,7 +118,8 @@ option __fs_dummydir(const char *path){
         1
     );
 
-    Directory *out = malloc(sizeof(Directory));
+    AbstractAllocator *absa = try(global.get(".absa")).data;
+    Directory *out = try(absa->alloc(absa->real, sizeof(Directory))).data;
     if (!out) throw(
         "Fs.CWD: failed to get current directory, malloc() failed",
         "Fs.CWD.Malloc.Failed",
@@ -168,10 +169,14 @@ option __fs_currentDirectory(){
 
 option __fs_freeFiles(array *files){
     if (!files) return noerropt;
-    __array_dfclean(files, lambda(variable *v){free(v->data);});
+    AbstractAllocator *absa = try(global.get(".absa")).data;
+    
+    __array_dfclean(files, lambda(variable *v){
+        absa->free(absa->real, v->data);
+    });
     try(__array_free(files));
 
-    AbstractAllocator *absa = try(global.get(".absa")).data;
+    
     try(absa->free(absa->real, files));
     return noerropt;
 }

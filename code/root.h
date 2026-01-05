@@ -16,11 +16,11 @@
 struct {
     Module _minfo;
     GeneralPurposeAllocator *allc_gpa;
-    // BasicAllocator allc_bsc;
+    BasicAllocator allc_bsc;
     RawAllocator allc_raw;
 
     AbstractAllocator absa;
-    // AbstractAllocator absa_bsc;
+    AbstractAllocator absa_bsc;
     AbstractAllocator absa_raw;
 
     option (*main)(variable *args, size_t argc);
@@ -32,7 +32,7 @@ option __testing_main(variable *args, size_t argc){
 }
 
 option pre_setup(){
-    std.io.term.println("[globals: %p]", &global);
+    // std.io.term.println("[globals: %p]", &global);
 
     pmain.allc_raw = std.mem.allc.raw.init();
     pmain.absa_raw = __mem_std_create_absallc(
@@ -53,17 +53,21 @@ option pre_setup(){
         __make_abstract_free(__alc_gpa_free, GeneralPurposeAllocator),
         pmain.allc_gpa
     );
-    // pmain.allc_bsc = std.mem.allc.basic.init();
-    // pmain.absa_bsc = __mem_std_create_absallc(
-    //     __make_abstract_alloc(__alc_basic_allocate, BasicAllocator),
-    //     __make_abstract_zalloc(__alc_basic_zeroalloc, BasicAllocator),
-    //     __make_abstract_realloc(__alc_basic_reallocate, BasicAllocator),
-    //     __make_abstract_free(__alc_basic_free, BasicAllocator),
-    //     &pmain.allc_bsc
-    // );
-    // try(global.save(".absa", np(&pmain.absa_bsc)));
     try(global.save(".absa", np(&pmain.absa)));
-    std.io.term.println("allc_gpa info: %p, pointers: %p real: %p", &pmain.absa, pmain.allc_gpa->pointers, pmain.absa.real);
+
+    pmain.allc_bsc = std.mem.allc.basic.init();
+    pmain.absa_bsc = __mem_std_create_absallc(
+        __make_abstract_alloc(__alc_basic_allocate, BasicAllocator),
+        __make_abstract_zalloc(__alc_basic_zeroalloc, BasicAllocator),
+        __make_abstract_realloc(__alc_basic_reallocate, BasicAllocator),
+        __make_abstract_free(__alc_basic_free, BasicAllocator),
+        &pmain.allc_bsc
+    );
+    try(global.save(".absa.bsc", np(&pmain.absa_bsc)));
+    // try(global.save(".absa", np(&pmain.absa_bsc)));
+    
+
+    // std.io.term.println("allc_gpa info: %p, pointers: %p real: %p", &pmain.absa, pmain.allc_gpa->pointers, pmain.absa.real);
     
     // std.io.term.println("presetup()");
     return noerropt;
@@ -75,7 +79,7 @@ option post_function(){
     size_t freezed_freed = pmain.allc_gpa->freed;
     size_t freezed_alced = pmain.allc_gpa->allocated;
     r = std.mem.allc.gpa.end(pmain.allc_gpa);
-    #ifndef NO_WARNINGS
+    #ifdef DEBUG_VERBOSE
     if (is_error(r)) std.io.term.println(
         "\n===============\nend: %s:%s (%zu, %zu)", 
         gerror(r).type, gerror(r).message, 
@@ -83,31 +87,33 @@ option post_function(){
     );
     #endif
 
-    // r = std.mem.allc.basic.end(&pmain.allc_bsc);
-    // #ifndef NO_WARNINGS
-    // if (is_error(r)) std.io.term.println("\n===============\nend: %s:%s (%zu, %zu)", gerror(r).type, gerror(r).message, pmain.allc_bsc.freed, pmain.allc_bsc.allocated);
-    // #endif
+    r = std.mem.allc.basic.end(&pmain.allc_bsc);
+    #ifdef DEBUG_VERBOSE
+    if (is_error(r)) std.io.term.println("\n===============\nend: %s:%s (%zu, %zu)", gerror(r).type, gerror(r).message, pmain.allc_bsc.freed, pmain.allc_bsc.allocated);
+    #endif
 
     r = std.mem.allc.raw.end(&pmain.allc_raw);
-    // #ifndef NO_WARNINGS
-    // if (is_error(r)) std.io.term.println("\n===============\nend: %s:%s (%zu, %zu)", gerror(r).type, gerror(r).message, pmain.allc_raw.freed, pmain.allc_raw.allocated);
-    // #endif
+    #ifdef DEBUG_VERBOSE
+    if (is_error(r)) std.io.term.println("\n===============\nend: %s:%s (%zu, %zu)", gerror(r).type, gerror(r).message, pmain.allc_raw.freed, pmain.allc_raw.allocated);
+    #endif
 
     return noerropt;
 }
 
 option __main_wrapped(variable *args, size_t argc){
     try(pre_setup());
+    
+    #ifndef TESTING
     tryd(fmain(args, argc), post_function);
+    #else
+    tryd(__testing_main(args, argc), post_function);
+    #endif
+
     try(post_function());
     return noerropt;
 }
 
 void psetup(){
-    #ifndef TESTING
     pmain.main = __main_wrapped;
-    #else
-    pmain.main = __testing_main;
-    #endif
     pmain._minfo = mModuleNew("main");
 }

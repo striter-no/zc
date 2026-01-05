@@ -38,9 +38,11 @@ option __alc_gpa_zeroalloc(GeneralPurposeAllocator *allc, size_t num_elements, s
 
 option __alc_gpa_end(GeneralPurposeAllocator *allc){
     if (!allc) throw("GeneralPurposeAllocator: cannot end GPA, allc ptr is null", "GeneralPurposeAllocator.End.Ptr.IsNULL", -1);
-    bool incorr = allc->freed != allc->allocated;
+    bool incorr = allc->freed != allc->allocated && allc->pointers->len != 0;
 
+    // fprintf(stderr, "gpa:end:ht size: %zu\n", allc->pointers->len);
     __hsht_free(allc->pointers, lambda(variable *vr){
+        // fprintf(stderr, "gpa:end: freeing %p\n", vr->data);
         free(vr->data);
     }, NULL);
     free(allc->pointers);
@@ -63,11 +65,11 @@ option __alc_gpa_allocate(GeneralPurposeAllocator *allc, size_t bytes){
     void *data = malloc(bytes);
     if (!data) throw("GeneralPurposeAllocator: cannot allocate bytes, malloc() failed", "GeneralPurposeAllocator.Alloc.Malloc.Failed", -2);
 
-    fprintf(stderr, "gpa (%p) allocating %zu bytes (ht: %p)\n", allc, bytes, allc->pointers);
+    // fprintf(stderr, "gpa (%p) allocating %zu bytes (ht: %p) -> %p\n", allc, bytes, allc->pointers, data);
     try(__hsht_set(allc->pointers, mvar(
         data, 0, false
     ), mvar(
-        data, bytes, false
+        data, 0, false
     )));
 
     allc->allocated++;
@@ -79,25 +81,20 @@ option __alc_gpa_free(GeneralPurposeAllocator *allc, void *pointer){
     if (!allc) throw("GeneralPurposeAllocator: cannot free pointer, allc ptr is null", "GeneralPurposeAllocator.Free.Ptr.IsNULL", -1);
     if (!pointer) return noerropt;
 
-    void *ptr = _catch(
-        __hsht_get(allc->pointers, mvar(pointer, 0, false)), 
-        mvar(NULL, 0, 0)
-    ).data;
+    // fprintf(stderr, "gpa: trying to free: %p\n", pointer);
+    var result = _catch(
+        __hsht_delete(allc->pointers, mvar(pointer, 0, false)), 
+        mvar(NULL, -1, 0)
+    ).size;
 
-    if (ptr == NULL) throw(
-        "GeneralPurposeAllocator: cannot free pointers, they are not allocated", 
-        "GeneralPurposeAllocator.Free.Data.NotAllocated", 
-        1
-    );
-
-    if (ptr == NULL && pointer != NULL) throw(
+    if (result == -1) {throw(
         "GeneralPurposeAllocator: cannot free pointers, they are not allocated in this allocator", 
         "GeneralPurposeAllocator.Free.Data.NotAllocated_inThisAllocator", 
-        2
-    );
+        1
+    );}
 
     free(pointer);
-    try(__hsht_delete(allc->pointers, mvar(pointer, 0, false)));
+    
     allc->freed++;
     return noerropt;
 }
@@ -138,16 +135,20 @@ option __alc_gpa_reallocate(GeneralPurposeAllocator *allc, void *pointer, size_t
     );
 
     void *new_ptr = realloc(pointer, new_bytes_size);
-    if (!new_ptr && ptr != NULL){
-        try(__alc_gpa_free(allc, pointer));
-    }
+    // if (!new_ptr && ptr != NULL){
+    //     // try(__alc_gpa_free(allc, pointer));
+    // }
     if (!new_ptr) throw(
         "GeneralPurposeAllocator: cannot reallocate bytes, realloc() failed", 
         "GeneralPurposeAllocator.Realloc.Failed", 
         -2
     );
 
-    try(__alc_gpa_free(allc, pointer));
+    if (new_ptr != pointer){
+        try(__hsht_delete(allc->pointers, mvar(pointer, 0, false)));
+    }
+
+    // try(__alc_gpa_free(allc, pointer));
     try(__hsht_set(allc->pointers, mvar(
         new_ptr, 0, false
     ), mvar(

@@ -1,5 +1,6 @@
 #pragma once
 #include <mds/std/_preincl/base.h>
+#include <mds/std/_preincl/globals.h>
 #include "array.h"
 
 typedef struct {
@@ -12,6 +13,7 @@ typedef struct {
     array values;
 
     size_t len;
+    AbstractAllocator *absa;
 } kvtable;
 
 kvtable __kvtable_new();
@@ -71,6 +73,7 @@ kvtable __kvtable_new(){
     return (kvtable){
         .keys = __array_new(),
         .values = __array_new(),
+        .absa = td(global.get(".absa")),
         .len = 0
     };
 }

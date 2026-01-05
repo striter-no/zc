@@ -29,9 +29,8 @@ option __hsht_free(hashtable *ht, void (^defer_key)(variable *vr), void (^defer_
 #ifdef HASHTABLE_IMPLEMENTATION
 
 size_t __hash_var(variable vr, size_t table_size) {
-    if (!vr.data || vr.size == 0) {
-        return 0;
-    }
+    if (!vr.data) return 0;
+    if (vr.size == 0) return __hash_ptr(vr.data, table_size);
     
     uint64_t hash = 14695981039346656037UL;
     unsigned char* data = (unsigned char*)vr.data;
@@ -54,10 +53,12 @@ option __hsht_delete(hashtable *ht, variable key) {
     size_t index = __hash_var(key, ht->capacity);
     array* bucket = (array*)(ht->table.elements[index].data);
     
+    // fprintf(stderr, "[hsht] trying to delete by %p (->inx: %zu, bucklen: %zu)\n", key.data, index, bucket->len);
     for (size_t i = 0; i < bucket->len; i++) {
         pair* pr = (pair*)(bucket->elements[i].data);
-        
+        // fprintf(stderr, "-> hsht: in for: %zu/%zu: cmp %p (%p)<->%p\n", i + 1, bucket->len, pr->first.data, pr->second.data, key.data);
         if (vis_equal(pr->first, key)) {
+            // fprintf(stderr, ":: hsht: found %p = %p\n", pr->first.data, key.data);
             delvar(&pr->first);
             delvar(&pr->second);
             try(ht->absa->free(ht->absa->real, pr));
@@ -163,7 +164,8 @@ option __hsht_new(){
 
 option __hsht_rehash(hashtable *ht){
     if (!ht) throw("Failed to rehash hashtable, hashtable ptr is NULL", "HSHT.Rehash.Ptr.IsNULL", -1);
-    
+    // fprintf(stderr, "[hsht] rehashing\n");
+
     size_t oldcap = ht->capacity;
     size_t newcap = oldcap * 2;
     
@@ -204,8 +206,9 @@ option __hsht_rehash(hashtable *ht){
 option __hsht_set(hashtable *ht, variable key, variable val){
     if (!ht) throw("Failed to insert new pair in hashtable, hashtable ptr is NULL", "HSHT.Insert.Ptr.IsNULL", -1);
 
-    // fprintf(stderr, "capacity: %zu\n", ht->capacity);
+    
     size_t index = __hash_var(key, ht->capacity);
+    // fprintf(stderr, "[hsht][set] by key: %p, val: %p (->inx: %zu)\n", key.data, val.data, index);
     var bucket = (array*)(ht->table.elements[index].data);
     
     bool found = false;

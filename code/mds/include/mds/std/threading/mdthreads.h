@@ -43,14 +43,14 @@ static void *__thr_worker_interface(void *_args){
     return NULL;
 }
 
-option __thr_create(option (*worker)(kvtable args), Arguments args);
+option __thr_create(option (*worker)(kvtable args), Arguments *args);
 option __thr_join(Thread thrd);
 option __thr_detach(Thread *thrd);
 option __thr_exit(void *retval);
 option __thr_destroy(Thread *thrd);
 #ifdef MDTHREADS_IMPLEMENTATION
 
-option __thr_create(option (*worker)(kvtable args), Arguments args){
+option __thr_create(option (*worker)(kvtable args), Arguments *args){
     AbstractAllocator *absa = try(global.get(".absa")).data;
     
     Thread *thrd = try(absa->alloc(absa->real, sizeof(Thread))).data;
@@ -63,11 +63,11 @@ option __thr_create(option (*worker)(kvtable args), Arguments args){
 
     struct __thread_args *newargs = try(absa->alloc(absa->real, sizeof(struct __thread_args))).data;
     newargs->args = try(absa->alloc(absa->real, sizeof(kvtable))).data;
-    *newargs->args = __unwrap_args(args);
+    *newargs->args = __unwrap_args(*args);
     newargs->output = try(absa->alloc(absa->real, sizeof(option))).data;
     newargs->oworker = worker;
     newargs->_main_pointer = thrd;
-    free_args(&args);
+    end_args(args);
 
     if (pthread_create(
         &thrd->posix_thread, 

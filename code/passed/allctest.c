@@ -48,7 +48,7 @@ $test(gpa){
     struct test *ptr = try(gp.alloc(gpa, sizeof(struct test))).data;
     ptr->a = 0;
     ptr->b = 'a';
-    // try(gp.free(gpa, ptr));
+    try(gp.free(gpa, ptr));
 
     try(gp.end(gpa));
     return noerropt;

@@ -82,7 +82,9 @@ inline static void __fn_panic(const char *msg){
 #define noerropt opt(NULL, 0, false)
 
 static inline option __fn_throw(const char *msg, const char *type, int code){
-    // fprintf(stderr, "raising...: %s: %s (%d)\n", type, msg, code);
+    #ifdef DEBUG_VERBOSE
+    fprintf(stderr, "throwing...: %s: %s (%d)\n", type, msg, code);
+    #endif
     return (option){
         .tag = OPT_ERROR_TYPE,
         .variant = {.err = (error){

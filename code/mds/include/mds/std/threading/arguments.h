@@ -16,7 +16,7 @@ typedef struct {
 } Arguments;
 
 option create_args(ArgumentField fields[], size_t count);
-option free_args(Arguments *args);
+option end_args(Arguments *args);
 kvtable __unwrap_args(Arguments args);
 #define thrargs(...) create_args( \
     (ArgumentField[]){__VA_ARGS__}, \
@@ -54,7 +54,7 @@ kvtable __unwrap_args(Arguments args){
     return kt;
 }
 
-option free_args(Arguments *args){
+option end_args(Arguments *args){
     if (args->fields){
         for (size_t i = 0; i < args->count; i++){
             delvar(&args->fields[i].value);
@@ -63,6 +63,7 @@ option free_args(Arguments *args){
         args->fields = NULL;
     }
     args->count = 0;
+    args->absa->free(args->absa->real, args);
     return noerropt;
 }
 

@@ -1,18 +1,15 @@
 #include <mds/core_impl.h>
 #include <mds/modules.h>
 
-
 Condt   *cnd;
 Awaiter *awt;
 
 option consumer(kvtable args);
 option producer(kvtable args);
-option fmain(variable *args, size_t argc){
+
+$test(conditions){
     var thr = std.threading;
-    var io  = std.io.term;
-    var skv = std.kvtable;
     var awtm = std.awaiter;
-    var tmm = std.time;
     var cndm = std.condt;
 
     cnd = try(cndm.create()).data;
@@ -20,8 +17,8 @@ option fmain(variable *args, size_t argc){
     cndm.subscribe(cnd);
 
     Thread *handles[] = {
-        (Thread*)try(thr.spawn(producer, nothrargs)).data,
-        (Thread*)try(thr.spawn(consumer, nothrargs)).data
+        (Thread*)try(thr.spawn(producer, nothrargs.data)).data,
+        (Thread*)try(thr.spawn(consumer, nothrargs.data)).data
     };
 
     try(thr.join(*handles[0]));
@@ -34,21 +31,21 @@ option fmain(variable *args, size_t argc){
 
 option producer(kvtable args){
 
-    while (true) {
-        tmm.sleep(tmm.fromSeconds(2));
-        io.println("< sending signal...");
-        cndm.signal(cnd);
+    for (int i = 0; i < 5; i++) {
+        std.time.sleep(std.time.fromSeconds(2));
+        std.io.term.println("< sending signal...");
+        std.condt.signal(cnd);
     }
 
     return noerropt;
 }
 
 option consumer(kvtable args){
-    while (true){
-        io.println("> waiting signal...");
-        awtm.wait(awt);
-        cndm.subcheck(cnd);
-        io.println("> got signal");
+    for (int i = 0; i < 5; i++) {
+        std.io.term.println("> waiting signal...");
+        std.awaiter.wait(awt);
+        std.condt.subcheck(cnd);
+        std.io.term.println("> got signal");
     }
 
     return noerropt;

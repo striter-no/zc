@@ -5,7 +5,7 @@
 
 #include <mds/genmod.h>
 #include <stdio.h>
-#include <stdlib.h>
+
 #include <stdarg.h>
 
 #include "tcp_server.h"

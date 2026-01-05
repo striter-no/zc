@@ -29,7 +29,7 @@ option __alc_basic_allocate(BasicAllocator *allc, size_t bytes){
     // fprintf(stderr, "basicallc: allocate -> %p\n", data);
 
     try(__array_shpushback(&allc->pointers, mvar(
-        data, bytes, true
+        data, bytes, false
     )));
 
     allc->allocated++;
@@ -57,8 +57,8 @@ option __alc_basic_free(BasicAllocator *allc, void *pointer){
     );
 
     // fprintf(stderr, "basicallc: free\n");
+    try(__array_shdelat(&allc->pointers, index));
     free(pointer);
-    try(__array_delat(&allc->pointers, index));
     allc->freed++;
     return noerropt;
 }
@@ -79,9 +79,9 @@ option __alc_basic_reallocate(BasicAllocator *allc, void *pointer, size_t new_by
     );
 
     void *new_ptr = realloc(pointer, new_bytes_size);
-    if (!new_ptr && index != -1){
-        __alc_basic_free(allc, pointer);
-    }
+    // if (!new_ptr && index != -1){
+    //     __alc_basic_free(allc, pointer);
+    // }
     if (!new_ptr) throw(
         "BasicAllocator: cannot reallocate bytes, realloc() failed", 
         "BasicAllocator.Realloc.Failed", 
@@ -105,18 +105,24 @@ BasicAllocator __alc_basic_init(){
 }
 
 option __alc_basic_end(BasicAllocator *allc){
-    bool incorr = allc->freed != allc->allocated;
-
-    size_t freezed_freed = allc->freed;
     size_t freezed_allocated = allc->allocated;
-    __array_foreach(&allc->pointers, lambda(variable *vr, size_t inx){
-        __alc_basic_free(allc, vr->data);
-        return 0;
-    });
+    
+    // Освобождаем элементы с конца массива, чтобы избежать проблем
+    // с изменением массива во время итерации
+    while (allc->pointers.len > 0) {
+        size_t last_index = allc->pointers.len - 1;
+        void *ptr = allc->pointers.elements[last_index].data;
+        fprintf(stderr, "bscallc: ending: %p/%p\n", &allc->pointers.elements[last_index], ptr);
+        free(ptr);
+        // Удаляем элемент из массива напрямую
+        allc->pointers.len--;
+        allc->freed++;
+    }
+    
     __array_free(&allc->pointers);
-    allc->freed = freezed_freed;
-    allc->allocated = freezed_allocated;
-
+    
+    // Проверяем, что все выделенные элементы были освобождены
+    bool incorr = allc->freed != freezed_allocated;
     if (incorr) throw(
         "BasicAllocator: end, freed != allocated",
         "BasicAllocator.End.AllocAndFreeMismatch",

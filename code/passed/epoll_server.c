@@ -1,6 +1,5 @@
-#include "mds/std/_preincl/base.h"
+#include <mds/core_impl.h>
 #include <mds/modules.h>
-#include <sys/epoll.h>
 
 typedef struct TCPServSocket tcpsock;
 typedef struct TCPServClient tcpcli;
@@ -13,9 +12,9 @@ typedef struct {
 } state;
 
 option fmain(variable *args, size_t argc){
-    var io = mInclude(std.io);
-    var net = mInclude(std.net.tcp.server);
-    var epoll = io.epoll;
+    var io = std.io.term;
+    var net = std.net.tcp.server;
+    var epoll = std.io.epoll;
     // var thrd = *(threads*)mInclude(std.threading);
 
     io.println("Creating socket");
@@ -56,7 +55,7 @@ option fmain(variable *args, size_t argc){
                     .input_buffer = mvar(NULL, 0, true),
                     .output_buffer = mvar(NULL, 0, true)
                 };
-                clistate->stream = io.sio.openStream(clistate->cli->fd, 0, 0); // sizes in async mode doesn't matter
+                clistate->stream = std.io.sio.openStream(clistate->cli->fd, 0, 0); // sizes in async mode doesn't matter
 
                 epoll.add(*eplr, clistate->cli->fd, EPOLLIN, clistate);
             } else if (event->events & (EPOLLHUP | EPOLLERR)) {
@@ -67,7 +66,7 @@ option fmain(variable *args, size_t argc){
                 free(ptr);
                 epoll.delete(*eplr, fd);
             } else if (event->events & (EPOLLIN)) {
-                var jread = try(io.sio.aio_sread(ptr->stream));
+                var jread = try(std.io.sio.aio_sread(ptr->stream));
                 if (jread.size == 0) { // end of data
                     epoll.modify(*eplr, ptr->cli->fd, EPOLLOUT, ptr);
                     return noerropt;
@@ -82,9 +81,9 @@ option fmain(variable *args, size_t argc){
                     try(addvar(&ptr->input_buffer, jread));
                     
                     io.println(
-                        "-> %s:%d : (%zu) %s\n", 
+                        "-> %s:%d : (%zu) %.*s\n", 
                         ptr->cli->ip, ptr->cli->port, 
-                        ptr->input_buffer.size, ptr->input_buffer.data
+                        ptr->input_buffer.size, ptr->input_buffer.size, ptr->input_buffer.data
                     );
 
                     movevar(&ptr->input_buffer, &ptr->output_buffer);
@@ -94,7 +93,7 @@ option fmain(variable *args, size_t argc){
                 // io.println("> EPOLLOUT");
 
                 io.println("> writing");
-                var jwrite_opt = io.sio.aio_swrite(ptr->stream, ptr->output_buffer.data, ptr->output_buffer.size);
+                var jwrite_opt = std.io.sio.aio_swrite(ptr->stream, ptr->output_buffer.data, ptr->output_buffer.size);
                 if (is_error(jwrite_opt) && gerror(jwrite_opt).code == -2) {
                     io.println("<- client disconnected");
                     int fd = ptr->cli->fd;

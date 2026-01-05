@@ -38,7 +38,7 @@ option __swrite(stream str, u8 *buff, size_t actual_size){
 
 stream __openStream(int fd, size_t read_bfsize, size_t write_bfsize){
     AbstractAllocator *absa = td(global.get(".absa"));
-    fprintf(stderr, "[glob:%p] opened stream with absa: %p\n", &global, absa);
+    // fprintf(stderr, "[glob:%p] opened stream with absa: %p\n", &global, absa);
 
     return (stream){
         fd, read_bfsize, write_bfsize, absa
@@ -108,20 +108,20 @@ option __aio_sread(stream str){
 option __sread(stream str){
     if (str.fd < 0) throw("Cannot read from stream, file descriptor incorrect", "Stream.Read.FD.Incorrect", -1);
 
-    fprintf(stderr, "allocating...");
+    // fprintf(stderr, "allocating...");
     u8 *obuff = try(str.absa->alloc(str.absa->real, sizeof(u8) * str.read_bfsize)).data;
     if (!obuff) throw("Cannot create temporal buffer for reading from stream, malloc failed", "Stream.Read.Malloc.Failed", -2);
 
-    fprintf(stderr, "reading...");
+    // fprintf(stderr, "reading...");
     ssize_t act_size = read(str.fd, obuff, str.read_bfsize);
 
     if (act_size < 0){
-        fprintf(stderr, "freeing...");
+        // fprintf(stderr, "freeing...");
         try(str.absa->free(str.absa->real, obuff));
         throw("Cannot read from stream, read size < 0", "Stream.Read.NegativeSize", -2);
     }
 
-    fprintf(stderr, "just read: %zu\n", act_size);
+    // fprintf(stderr, "just read: %zu\n", act_size);
     return opt(obuff, sizeof(u8) * act_size, true);
 }
 

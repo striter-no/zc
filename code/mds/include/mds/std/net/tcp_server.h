@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <netinet/in.h>
-#include <stdlib.h>
+
 #include <arpa/inet.h>
 
 #include <sys/socket.h>
@@ -104,16 +104,23 @@ option __tcp_serv_create(const char ip[IPV4_ADDRLEN],const u16  port,bool       
     struct TCPServSocket *sock = try(absa->alloc(absa->real, sizeof(struct TCPServSocket))).data;
     if (!sock) throw(    "Failed to allocate memory for socket",    "ServSock.Create.Malloc.Failed",    -1
     );
-    sock->absa = absa;
     
     *sock = (struct TCPServSocket){
         .addr = (struct sockaddr_in){
-            .sin_addr = {inet_addr(ip)},        .sin_port = htons(port),        .sin_family = AF_INET
-        },    .fd = socket(AF_INET, SOCK_STREAM, 0),    .port = port,    .ip = "",    .is_blocking = blocking
+            .sin_addr = {inet_addr(ip)},        
+            .sin_port = htons(port),        
+            .sin_family = AF_INET
+        },    
+        .fd = socket(AF_INET, SOCK_STREAM, 0),    
+        .port = port,    
+        .ip = "",    
+        .is_blocking = blocking,
+        .absa = absa
     };
     strcpy(sock->ip, ip);
     
-    if (sock->fd < 0) throw(    "Cannot create TCP server socket", 
+    if (sock->fd < 0) throw(    
+        "Cannot create TCP server socket", 
         "ServSock.Create.Failed", 
         1
     );
@@ -123,7 +130,10 @@ option __tcp_serv_create(const char ip[IPV4_ADDRLEN],const u16  port,bool       
         SO_REUSEADDR, 
         &(int){1}, 
         sizeof(int)
-    ) < 0) throw(    "Cannot set socket option SO_REUSEADDR",    "ServSock.SetSockOpt.Failed",    2
+    ) < 0) throw(    
+        "Cannot set socket option SO_REUSEADDR",    
+        "ServSock.SetSockOpt.Failed",    
+        2
     );
 
     return opt(sock, sizeof(*sock), true);

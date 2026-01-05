@@ -1,6 +1,6 @@
 #pragma once
 #include <mds/std/_preincl/base.h>
-#include <stdlib.h>
+
 #include <string.h>
 #include <stdbool.h>
 #include <mds/std/memory/allocators/abstract.h>
@@ -27,6 +27,7 @@ option __array_extend_to(array *ptr, size_t len);
 option __array_refat(array *ptr, size_t index);
 option __array_at(array *ptr, size_t index);
 option __array_delat(array *ptr, size_t index);
+option __array_shdelat(array *ptr, size_t index);
 // retval option<vn<index>>
 option __array_index(array *ptr, variable vr);
 option __array_findByPtr(array *ptr, void* vr);
@@ -68,6 +69,24 @@ option __array_delat(array *ptr, size_t index){
             &ptr->elements[i]
         ));
     }
+    ptr->len--;
+
+    return noerropt;
+}
+
+option __array_shdelat(array *ptr, size_t index){
+    if (!ptr) throw("Failed to delete element at given index", "Array.Delete.Ptr.IsNULL", -1);
+    if (index >= ptr->len) throw("Failed to delete element at given index", "Array.Del.Index.Overflow", 1);
+
+    // Просто сдвигаем элементы влево, не вызывая delvar для удаляемого элемента
+    // и не используя shallowmove, который вызывает delvar(from)
+    for (size_t i = index; i < ptr->len - 1; i++){
+        ptr->elements[i] = ptr->elements[i + 1];
+    }
+    // Очищаем последний элемент (который теперь дублируется)
+    ptr->elements[ptr->len - 1].data = NULL;
+    ptr->elements[ptr->len - 1].size = 0;
+    ptr->elements[ptr->len - 1].alloced = false;
     ptr->len--;
 
     return noerropt;

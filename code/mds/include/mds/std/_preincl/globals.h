@@ -1,6 +1,8 @@
 #pragma once
 #include "base.h"
 // #include <mds/std/threading/arguments.h>
+#include <mds/std/memory/allocators/abstract.h>
+#include <mds/std/memory/allocators/raw.h>
 
 typedef struct {
     char *key;
@@ -18,6 +20,9 @@ typedef struct {
     option (*get) (char *key);
     option (*copy)(char *key, variable value);
     option (*save)(char *key, variable value);
+
+    AbstractAllocator absa;
+    RawAllocator      ralc;
 } Globals;
 extern Globals global;
 
@@ -41,7 +46,7 @@ Globals global = {0};
 __glb_pktable __pktable_init(){
     return (__glb_pktable){
         .pairs = NULL,
-        .len = 0
+        .len = 0,
     };
 }
 
@@ -60,9 +65,9 @@ option __glb_kt_set(__glb_pktable *t, char *key, variable vr, bool shallow){
         return noerropt;
     }
 
-    t->pairs = realloc(t->pairs, sizeof(__glb_ktpair) * (t->len + 1));
+    t->pairs = try(global.absa.realloc(&global.ralc, t->pairs, sizeof(__glb_ktpair) * (t->len + 1))).data;
     
-    t->pairs[t->len].key = __nullpanic(malloc(strlen(key) + 1));
+    t->pairs[t->len].key = try(global.absa.alloc(&global.ralc, strlen(key) + 1)).data;
     strcpy(t->pairs[t->len].key, key);
 
     t->pairs[t->len].vr = (!shallow)? try(copyvar(vr)): shcopyvar(vr);
@@ -94,10 +99,10 @@ option __glb_kt_get(__glb_pktable *t, char *key){
 void __glb_kt_free(__glb_pktable *t, void (^defer)(variable *vr)){
     if (!t) return;
     for (size_t i = 0; i < t->len; i++){
-        free(t->pairs[i].key);
+        global.absa.free(&global.ralc, t->pairs[i].key);
         defer(&t->pairs[i].vr);
     }
-    free(t->pairs);
+    global.absa.free(&global.ralc, t->pairs);
 }
 
 void __global_init(){
@@ -105,6 +110,15 @@ void __global_init(){
     global.copy = __global_fn_copy;
     global.save = __global_fn_save;
     global.get = __global_fn_get;
+
+    global.ralc = __alc_raw_init();
+    global.absa = __mem_std_create_absallc(
+        __make_abstract_alloc(__alc_raw_allocate, RawAllocator),
+        __make_abstract_zalloc(__alc_raw_zeroalloc, RawAllocator),
+        __make_abstract_realloc(__alc_raw_reallocate, RawAllocator),
+        __make_abstract_free(__alc_raw_free, RawAllocator),
+        &global.ralc
+    );
 }
 
 option __global_fn_get(char *key){

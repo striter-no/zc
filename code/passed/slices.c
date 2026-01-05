@@ -24,13 +24,9 @@ $test(slices_basic){
         arrprint(slice_arr);
 
         arm.free(slice_arr);
-        free(slice_arr);
-
         slm.free_slice(&slice);
     }
 
     arm.free(arr);
-    free(arr);
-    
     return noerropt;
 }

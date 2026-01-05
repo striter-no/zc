@@ -21,6 +21,7 @@ void delvar(variable *vr);
 #ifdef VARIABLE_IMPLEMENTATION
 
 option copyvar(variable copy){
+    
     variable nvar = mvar(NULL, copy.size, true);
     if (copy.data != NULL){
         nvar.data = malloc(nvar.size);
@@ -86,6 +87,14 @@ variable nv(ssize_t value){
 option movevar(variable *from, variable *to){
     delvar(to);
     *to = try(copyvar(*from));
+    delvar(from);
+
+    return noerropt;
+}
+
+option shallowmove(variable *from, variable *to){
+    delvar(to);
+    *to = *from;
     delvar(from);
 
     return noerropt;
@@ -158,11 +167,12 @@ option __vrb_foreach(variable *vb, size_t elsize, option (*lmbd)(void* arg, size
 }
 
 bool vis_equal(variable v1, variable v2){
-    return ((v1.size == 0) && (v2.size == 0) && (v1.data == NULL) && (v2.data == NULL)) || (v1.size == v2.size && 
-           ((v1.size != 0 && v1.data == NULL) || 
-            (v2.size != 0 && v2.data == NULL) || 
-            !memcmp(v1.data, v2.data, v1.size)
-    ));
+    if (v1.data == NULL && v2.data == NULL) return true;
+    if (v1.data == NULL || v2.data == NULL) return false;
+    if (v1.size != v2.size)                 return false;
+    if (v1.size == 0 && v2.size == 0)       return v1.data == v2.data;
+    
+    return memcmp(v1.data, v2.data, v1.size) == 0;
 }
 
 
