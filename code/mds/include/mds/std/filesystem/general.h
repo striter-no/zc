@@ -33,6 +33,7 @@ bool __fs_create_directories(const char* path, int mode){
     char *p = NULL;
     size_t len;
 
+    bool success = false;
     snprintf(tmp, sizeof(tmp), "%s", path);
     len = strlen(tmp);
     if (tmp[len - 1] == '/')
@@ -40,13 +41,12 @@ bool __fs_create_directories(const char* path, int mode){
     for (p = tmp + 1; *p; p++)
         if (*p == '/') {
             *p = 0;
-            if (!__fs_create_directory(tmp, mode))
-                return false;
+            success = __fs_create_directory(tmp, mode)? true: success;
             *p = '/';
         }
     mkdir(tmp, mode);
     
-    return true;
+    return success;
 }
 
 bool __fs_create_directory(const char* path, int mode){

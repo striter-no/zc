@@ -18,6 +18,7 @@ bool __std_mem_isDataSentineled(void *data, size_t data_size, ssize_t el_size, v
 
     size_t step = el_size == -1 ? 1: sentinel_size;
     size_t offset = 0;
+    // fprintf(stderr, "ids: %zu %zu %zu\n", data_size, el_size, sentinel_size);
     while (offset < data_size - sentinel_size){
         if (memcmp((u8*)data + offset, sentinel, sentinel_size) == 0)
             return true;

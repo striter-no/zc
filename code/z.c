@@ -133,19 +133,35 @@ const char *GENERAL_CLANGD =
 "    Add:\n"
 "        - \"-std=c++2x\"\n";
 
-option get_curent_proj(){
+option get_curent_proj(const char *proj_name){
     String *out = try(talloc(sizeof(String))).data;
     
     var fs = std.fs;
+    var tk = std.mem.tokenizer;
     Directory *code = try(fs.dummydir("./code")).data;
 
+    char path[PATH_MAX] = "";
     array *dirs = try(fs.list_subdirs(code, false)).data;
     for (size_t i = 0; i < dirs->len; i++){
         Directory *d = dirs->elements[i].data;
-        std.io.term.println("directory: %s", d->path);
+        
+        array *samples = try(tk.tokenizeString(d->path, '/')).data;
+        const char *base = ((Slice*)samples->elements[samples->len - 1].data)->data;
+
+        if (strcmp(base, proj_name) == 0){
+            strcpy(path, d->path);
+            std.io.term.println("Had found directory: %s", d->path);
+            break;
+        }
     }
+
+    *out = std.str.fromc(try(std.fmt.format(
+        "%s/subcode/main.c", path
+    )).data);
     
     fs.freeentries(dirs);
+    tfree(out);
+
     return opt(out, sizeof(String), false);
 }
 
@@ -233,7 +249,7 @@ option fmain(variable *args, size_t argc){
             try(fmt.format("code/%s/src", args[2].data)).data,
             try(fmt.format("bin")).data,
             try(fmt.format("dev")).data,
-            try(fmt.format("./code/%s/subcode")).data
+            try(fmt.format("./code/%s/subcode", args[2].data)).data
         };
 
         for (size_t i = 0; i < sizeof(st) / sizeof(st[0]); i++){
@@ -247,8 +263,8 @@ option fmain(variable *args, size_t argc){
         io.println("[zc] creating .gitignore");
         fs.fileclose(try(fs.fileopen(".gitignore", "w")).data);
         
-        io.println("[zc] creating code/main.c");
-        File *main = try(fs.fileopen("code/main.c", "w")).data;
+        io.println("[zc] creating code/main.z.c");
+        File *main = try(fs.fileopen("code/main.z.c", "w")).data;
         std.io.sio.swrite(main->selfstr, (u8*)GENERAL_MAIN, strlen(GENERAL_MAIN));
         fs.fileclose(main);
 

@@ -6,7 +6,7 @@ $test(tokenize){
     array *arr = try(std.mem.tokenizer.tokenizeString(data, ' ')).data;
     for (size_t i = 0; i < arr->len; i++){
         Slice *slice = arr->elements[i].data;
-        std.io.term.print("%.*s\n", slice->slice_size, slice->data);
+        std.io.term.print("%.*s\n", slice->size, slice->data);
     }
 
     return noerropt;

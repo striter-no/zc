@@ -82,7 +82,7 @@ $test(list_files_dummy){
         io.println("File: %s (%zu bytes)", file->filename, file->size);
     return 1;});
 
-    fs.freefiles(files);
+    fs.freeentries(files);
     // free(cwd);
     return noerropt;
 }
@@ -100,7 +100,7 @@ $test(list_files_recursive){
         io.println("File: %s (%zu bytes)", file->filename, file->size);
     return 1;});
     
-    // fs.freefiles(files);
+    // fs.freeentries(files);
     // free(cwd);
     return noerropt;
 }

@@ -18,7 +18,7 @@ $test(slices_basic){
 
     // slice
     Slice slice = slm.slice(arr->elements, sizeof(variable), 1, 4);
-    std.io.term.println("Slice info: size: %zu el_size: %zu", slice.slice_size, slice.el_size);
+    std.io.term.println("Slice info: size: %zu el_size: %zu", slice.size, slice.el_size);
     {
         array *slice_arr = try(slm.slice_as_array(slice)).data;
         arrprint(slice_arr);

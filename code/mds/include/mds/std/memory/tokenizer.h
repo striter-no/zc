@@ -69,10 +69,40 @@ option __std_mem_tokenizeCopyMemory(
 option __std_mem_tokenizeString(
     char *valid_cstring, char delim
 ){
-    char *_delim = malloc(1);
-    _delim[0] = delim;
 
-    option r = __std_mem_tokenizeMemory(valid_cstring, strlen(valid_cstring) +1 ,1, _delim);
-    free(_delim);
+    AbstractAllocator *absa = try(global.get(".absa")).data;
+    var autocopy = lambda(void *data, size_t size){
+        void *out = try(absa->alloc(absa->real, size)).data;
+        memcpy(out, data, size);
+        return opt(out, size, false);
+    };
+
+    option r = __std_mem_tokenizeMemory(valid_cstring, strlen(valid_cstring) +1 ,1, &delim);
+    if (is_error(r)) return r;
+
+    array *tmp = td(r);
+    for (size_t i = 0; i < tmp->len; i++){
+        Slice *sl = tmp->elements[i].data;
+        char *data = try(autocopy(sl->data, sl->size)).data;
+
+        if (!__std_mem_isDataSentineled(data, sl->size, 1, "\0", 1)){
+            data = try(__std_mem_sentinelData(data, sl->size, "\0", 1)).data;
+        }
+
+        size_t si = sl->start_inx, ei = sl->end_inx;
+        __std_mem_free_slice(sl);
+        *sl = (Slice){
+            .absa = absa,
+            .copy = true,
+            .raw = false,
+            .data = data,
+            .origin = valid_cstring,
+            .el_size = 1,
+            .size = strlen(data) + 1,
+            .start_inx = si,
+            .end_inx = ei
+        };
+    }
+
     return r;
 }

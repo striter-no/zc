@@ -8,7 +8,7 @@ typedef struct {
     size_t  start_inx;
     size_t  end_inx;
     ssize_t el_size;
-    size_t  slice_size;
+    size_t  size;
 
     bool    copy;
     bool    raw;
@@ -29,7 +29,7 @@ option __std_mem_free_slice(Slice *slice);
 
 Slice __std_mem_slice(void *data, size_t el_size, size_t start_inx, size_t end_inx){
     return (Slice){
-        .slice_size = end_inx - start_inx,    
+        .size = end_inx - start_inx,    
         .start_inx = start_inx,    
         .end_inx = end_inx,    
         .el_size = el_size,
@@ -46,13 +46,13 @@ option __std_mem_copy_slice(Slice origin){
     if (!output) throw(    "Std.Mem.Slice: cannot make copy of the slice, malloc() failed",    "Std.Mem.Slice.SliceCopy.Malloc.Failed",    -1
     );
 
-    void *copied = try(origin.absa->alloc(origin.absa->real, origin.slice_size * (origin.raw ? 1: origin.el_size))).data;
+    void *copied = try(origin.absa->alloc(origin.absa->real, origin.size * (origin.raw ? 1: origin.el_size))).data;
     if (!copied) throw(    "Std.Mem.Slice: cannot make copy of the slice, malloc(2) failed",    "Std.Mem.Slice.SliceCopy.Malloc.2.Failed",    -2
     );
     
-    memcpy(copied, origin.data, origin.slice_size * (origin.raw ? 1: origin.el_size));
+    memcpy(copied, origin.data, origin.size * (origin.raw ? 1: origin.el_size));
     *output = (Slice){
-        .slice_size = origin.end_inx - origin.start_inx,    
+        .size = origin.end_inx - origin.start_inx,    
         .start_inx = origin.start_inx,    
         .end_inx = origin.end_inx,    
         .el_size = origin.el_size,
@@ -75,8 +75,8 @@ option __std_mem_slice_as_array(Slice slice){
     );
 
     *out = __array_new();
-    try(__array_reserve(out, slice.slice_size));
-    for (size_t i = 0; i < slice.slice_size; i++){
+    try(__array_reserve(out, slice.size));
+    for (size_t i = 0; i < slice.size; i++){
         // fprintf(stderr, "saa: %zu\n", i);
         out->elements[i] = mvar(((char*)slice.data) + i * slice.el_size, slice.el_size, false);
     }
@@ -86,7 +86,7 @@ option __std_mem_slice_as_array(Slice slice){
 
 Slice __std_mem_sliceraw(void *data, size_t start_offset, size_t end_offset){
     return (Slice){
-        .slice_size = end_offset - start_offset,    
+        .size = end_offset - start_offset,    
         .start_inx = start_offset,    
         .end_inx = end_offset,    
         .el_size = 0,
@@ -129,7 +129,7 @@ option __std_mem_ac_slice(void *data, size_t el_size, size_t start_inx, size_t e
     );
     memcpy(copied, data + start_inx * el_size, (end_inx - start_inx) * el_size);
     *output = (Slice){
-        .slice_size = end_inx - start_inx,    
+        .size = end_inx - start_inx,    
         .start_inx = start_inx,    
         .end_inx = end_inx,    
         .el_size = el_size,
@@ -154,7 +154,7 @@ option __std_mem_ac_sliceraw(void *data, size_t start_offset, size_t end_offset)
     );
 
     *output = (Slice){
-        .slice_size = end_offset - start_offset,    
+        .size = end_offset - start_offset,    
         .start_inx  = start_offset,    
         .end_inx = end_offset,    
         .el_size = 0,
@@ -172,7 +172,7 @@ option __std_mem_slice_convraw(Slice *raw, size_t el_size){
     if (el_size == 0) throw(    "Std.Mem.Slice: cannot convert raw slice, el_size cannot be zero",    "Std.Mem.Slice.ConvRaw.ElSize.IsZero",    1
     );
 
-    if (raw->slice_size % el_size != 0) throw(    "Std.Mem.Slice: cannot convert raw slice, slice_size %% el_size != 0",    "Std.Mem.Slice.ConvRaw.InvalidSize",    2
+    if (raw->size % el_size != 0) throw(    "Std.Mem.Slice: cannot convert raw slice, size %% el_size != 0",    "Std.Mem.Slice.ConvRaw.InvalidSize",    2
     );
 
     if (raw->start_inx % el_size != 0) throw(    "Std.Mem.Slice: cannot convert raw slice, start_inx %% el_size != 0",    "Std.Mem.Slice.ConvRaw.InvalidIndex_start",    3
