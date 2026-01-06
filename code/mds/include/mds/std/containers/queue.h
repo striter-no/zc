@@ -12,7 +12,7 @@ queue __queue_new();
 option __queue_top(queue q);
 option __queue_push(queue *q, variable vr);
 option __queue_pop(queue *q);
-void __queue_dfclean(queue *q, void (^defer)(variable *vr));
+void __queue_dfclean(queue *q, void (^_defer)(variable *vr));
 option __queue_free(queue *q);
 #ifdef QUEUE_IMPLEMENTATION
 
@@ -31,10 +31,10 @@ option __queue_pop(queue *q){
     ));
 }
 
-void __queue_dfclean(queue *q, void (^defer)(variable *vr)){
+void __queue_dfclean(queue *q, void (^_defer)(variable *vr)){
     if (!q) return;
 
-    __array_dfclean(&q->data, defer);
+    __array_dfclean(&q->data, _defer);
     q->len = 0;
 }
 

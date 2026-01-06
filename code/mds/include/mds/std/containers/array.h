@@ -36,7 +36,7 @@ option __array_pushback(array *ptr, variable vr);
 option __array_shpushback(array *ptr, variable vr);
 // retval option<void>
 option __array_pop(array *ptr);
-void __array_dfclean(array *ptr, void (^defer)(variable *vr));
+void __array_dfclean(array *ptr, void (^_defer)(variable *vr));
 option __array_free(array *ptr);
 #ifdef ARRAY_IMPLEMENTATION
 
@@ -111,11 +111,11 @@ option __array_extend_to(array *ptr, size_t len){
     return noerropt;
 }
 
-void __array_dfclean(array *ptr, void (^defer)(variable *vr)){
+void __array_dfclean(array *ptr, void (^_defer)(variable *vr)){
     if (!ptr) return;
 
     for (size_t i = 0; i < ptr->len; i++){
-        defer(&ptr->elements[i]);
+        _defer(&ptr->elements[i]);
         delvar(&ptr->elements[i]);
     }
 }

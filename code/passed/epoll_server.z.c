@@ -20,15 +20,15 @@ option fmain(variable *args, size_t argc){
     io.println("Creating socket");
     tcpsock *sock = td(net.create("127.0.0.1", 9000, true)); // true for non-blocking mode
 
-    var defer = lambda(){
+    var _defer = lambda(){
         net.close(sock);
         free(sock);
     };
 
     io.println("Binding...");
-    tryd(net.bind(sock), defer);
+    tryd(net.bind(sock), _defer);
     io.println("Listening...");
-    tryd(net.listen(sock, 20), defer);
+    tryd(net.listen(sock, 20), _defer);
     
     io.println("Epoll init...");
     epoller *eplr = td(epoll.init());

@@ -50,21 +50,21 @@ $test(kvtable){
     kvtable table = kvt.new();
     io.println("Table size: %zu", table.len);
 
-    var defer = lambda(){
+    var _defer = lambda(){
         kvt.free(&table);
     };
 
     kvt.set(&table, nv(12), nv(42));
     io.println("Table size: %zu", table.len);
-    io.println("At 12 is... %zu", tryd(kvt.at(&table, nv(12)), defer).size);
+    io.println("At 12 is... %zu", tryd(kvt.at(&table, nv(12)), _defer).size);
 
-    var ref = (variable*)(tryd(kvt.refat(&table, nv(12)), defer).data);
+    var ref = (variable*)(tryd(kvt.refat(&table, nv(12)), _defer).data);
     ref->size = 90;
 
-    io.println("At 12 is... %zu", tryd(kvt.at(&table, nv(12)), defer).size);
-    io.println("Value 90 has... %zu", tryd(kvt.key_by_val(&table, nv(90)), defer).size);
+    io.println("At 12 is... %zu", tryd(kvt.at(&table, nv(12)), _defer).size);
+    io.println("Value 90 has... %zu", tryd(kvt.key_by_val(&table, nv(90)), _defer).size);
 
-    tryd(kvt.delat(&table, nv(12)), defer);
+    tryd(kvt.delat(&table, nv(12)), _defer);
     io.println("Table size: %zu", table.len);
 
     kvt.free(&table);

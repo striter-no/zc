@@ -21,7 +21,7 @@ typedef struct {
     option (*shpushback)(array *ptr, variable vr);
     option (*pop)(array *ptr);
     option (*extendto)(array *ptr, size_t newlen);
-    void   (*dfclean)(array *ptr, void (^defer)(variable *vr));
+    void   (*dfclean)(array *ptr, void (^_defer)(variable *vr));
     option (*free)(array *ptr);
 
     void   (*foreach)(array *ptr, int (^expr)(variable *, size_t));
@@ -53,7 +53,7 @@ typedef struct {
  
     queue  (*new)();
     option (*free)(queue* q);
-    void   (*dfclean)(queue *q, void (^defer)(variable *vr));
+    void   (*dfclean)(queue *q, void (^_defer)(variable *vr));
     option (*push)(queue *q, variable vr);
     option (*pop)(queue *q);
     option (*top)(queue q);

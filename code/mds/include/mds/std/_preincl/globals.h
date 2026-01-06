@@ -30,7 +30,7 @@ __glb_pktable __pktable_init();
 
 option __glb_kt_set(__glb_pktable *t, char *key, variable vr, bool shallow);
 option __glb_kt_get(__glb_pktable *t, char *key);
-void __glb_kt_free(__glb_pktable *t, void (^defer)(variable *vr));
+void __glb_kt_free(__glb_pktable *t, void (^_defer)(variable *vr));
 
 option __global_fn_get(char *key);
 option __global_fn_copy(char *key, variable value);
@@ -96,11 +96,11 @@ option __glb_kt_get(__glb_pktable *t, char *key){
     );
 }
 
-void __glb_kt_free(__glb_pktable *t, void (^defer)(variable *vr)){
+void __glb_kt_free(__glb_pktable *t, void (^_defer)(variable *vr)){
     if (!t) return;
     for (size_t i = 0; i < t->len; i++){
         global.absa.free(&global.ralc, t->pairs[i].key);
-        defer(&t->pairs[i].vr);
+        _defer(&t->pairs[i].vr);
     }
     global.absa.free(&global.ralc, t->pairs);
 }

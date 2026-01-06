@@ -73,7 +73,7 @@ void    *discard  (option opt); // done
 option opt_var(variable _var); // done
 option opt    (void *data, ssize_t size, bool alloced); // done
 void  *td     (option opt); // done
-void  *tdf    (option opt, void (^defer)()); // done
+void  *tdf    (option opt, void (^_defer)()); // done
 
 bool  is_error(option opt); // done
 error gerror  (option opt); // done

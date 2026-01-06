@@ -7,7 +7,7 @@ option opt_var(variable _var);
 option opt(void *data, ssize_t size, bool alloced);
 void *discard(option opt);
 void *td(option opt);
-void *tdf(option opt, void (^defer)());
+void *tdf(option opt, void (^_defer)());
 
 bool is_error(option opt);
 error gerror (option opt);
@@ -36,9 +36,9 @@ error gerror (option opt){
     return opt.variant.err;
 }
 
-void *tdf(option opt, void (^defer)()){
+void *tdf(option opt, void (^_defer)()){
     if (opt.tag == OPT_ERROR_TYPE){
-        defer();
+        _defer();
         return NULL;
     }
 
