@@ -93,7 +93,7 @@ const char *GENERAL_SUBCODE =
 "    if (ret.tag == OPT_ERROR_TYPE){\n"
 "        fprintf(\n"
 "            stderr, \n"
-"            \"\\n==============\\nprogram exited with error:\n%s: %s\\n\", \n"
+"            \"\\n==============\\nprogram exited with error:\\n%s: %s\\n\", \n"
 "            ret.variant.err.type,\n"
 "            ret.variant.err.message\n"
 "        );\n"
@@ -110,9 +110,9 @@ const char *GENERAL_MAIN =
 "#include <mds/modules.h>\n\n"
 "option fmain(variable *args, size_t argc){\n"
 "\tvar io = std.io.term;\n"
-"\tio.println(\"Hello, %s\", \"world!\");\n"
+"\tio.println(\"Hello, %s\", \"world!\");\n\n"
 "\treturn noerropt;\n"
-"\n}\n";
+"}\n";
 
 const char *GENERAL_CLANGD = 
 "CompileFlags:\n"
@@ -134,35 +134,34 @@ const char *GENERAL_CLANGD =
 "        - \"-std=c++2x\"\n";
 
 option get_curent_proj(const char *proj_name){
-    String *out = try(talloc(sizeof(String))).data;
-    
     var fs = std.fs;
     var tk = std.mem.tokenizer;
     Directory *code = try(fs.dummydir("./code")).data;
 
     char path[PATH_MAX] = "";
-    array *dirs = try(fs.list_subdirs(code, false)).data;
+    array *dirs = try(fs.list_files(code, true)).data;
     for (size_t i = 0; i < dirs->len; i++){
         Directory *d = dirs->elements[i].data;
         
         array *samples = try(tk.tokenizeString(d->path, '/')).data;
-        const char *base = ((Slice*)samples->elements[samples->len - 1].data)->data;
+        
+        if (samples->len < 2) continue;
+        const char *base = ((Slice*)samples->elements[samples->len - 2].data)->data;
 
-        if (strcmp(base, proj_name) == 0){
-            strcpy(path, d->path);
-            std.io.term.println("Had found directory: %s", d->path);
+        if (strcmp(base, "subcode") == 0){
+            strcpy(path, ((Slice*)samples->elements[2].data)->data);
             break;
         }
     }
 
-    *out = std.str.fromc(try(std.fmt.format(
-        "%s/subcode/main.c", path
-    )).data);
-    
-    fs.freeentries(dirs);
-    tfree(out);
+    if (path[0] == '\0') throw(
+        "Cannot get current project name, ensure that you have ./code folder and ./code/subcode with main.c",
+        "ZC.InvalidProjectArchitecture",
+        1
+    );
 
-    return opt(out, sizeof(String), false);
+    fs.freeentries(dirs);
+    return opt(path, strlen(path) + 1, false);
 }
 
 option fmain(variable *args, size_t argc){
@@ -177,60 +176,68 @@ option fmain(variable *args, size_t argc){
         exit(EXIT_FAILURE);
     }
 
+    // char *prjname = "mds";
+
     if (strcmp((char*)args[1].data, "run") == 0){
         var s = try(
             fmt.format("./bin/%s", args[2].data)
         ).data;
         system(s);
     } else if (strcmp((char*)args[1].data, "release") == 0){
+        char *prjname = try(get_curent_proj(args[2].data)).data;
+
         fs.mkdir("./bin", 0700);
         var s = try(
             fmt.format(
                 "clang "
                 "-std=c2x "
-                "-Dmain_file=%s.c "
+                "-Dmain_file=%s.z.c "
                 "-D_GNU_SOURCE "
                 "-DNO_WARNINGS "
                 "-O3 -o "
                 "./bin/%s "
-                "./code/mds/subcode/main.c "
-                "-I ./code/mds/include -fblocks -lBlocksRuntime -ldl", 
-                args[2].data, args[2].data
+                "./code/%s/subcode/main.c "
+                "-I ./code/%s/include -fblocks -lBlocksRuntime -ldl", 
+                args[2].data, args[2].data, prjname, prjname
             )
         ).data;
         system(s);
         free(s);
     } else if (strcmp((char*)args[1].data, "build") == 0){
+        char *prjname = try(get_curent_proj(args[2].data)).data;
+
         var s = try(
             fmt.format(
                 "clang "
                 "-std=c2x "
-                "-Dmain_file=%s.c "
+                "-Dmain_file=%s.z.c "
                 "-D_GNU_SOURCE "
                 "-fsanitize=undefined,address "
                 "-O0 -g -o " //-Wall -Wextra 
                 "./bin/%s "
-                "./code/mds/subcode/main.c "
-                "-I ./code/mds/include -fblocks -lBlocksRuntime -ldl", 
-                args[2].data, args[2].data
+                "./code/%s/subcode/main.c "
+                "-I ./code/%s/include -fblocks -lBlocksRuntime -ldl", 
+                args[2].data, args[2].data, prjname, prjname
             )
         ).data;
         system(s);
         try(std.mem.allc.gpa.free(balc->real, s));
     } else if (strcmp((char*)args[1].data, "test") == 0){
+        char *prjname = try(get_curent_proj(args[2].data)).data;
+
         var s = try(
             fmt.format(
                 "clang "
                 "-std=c2x "
                 "-DTESTING "
-                "-Dmain_file=%s.c "
+                "-Dmain_file=%s.z.c "
                 "-D_GNU_SOURCE "
                 "-fsanitize=undefined,address "
                 "-O0 -gdwarf-4 -o "
                 "./bin/%s "
-                "./code/mds/subcode/main.c "
-                "-I ./code/mds/include -fblocks -lBlocksRuntime", 
-                args[2].data, args[2].data
+                "./code/%s/subcode/main.c "
+                "-I ./code/%s/include -fblocks -lBlocksRuntime", 
+                args[2].data, args[2].data, prjname, prjname
             )
         ).data;
         io.println("[zc] compiling...");
@@ -283,6 +290,9 @@ option fmain(variable *args, size_t argc){
         File *root = try(fs.fileopen("code/root.h", "w")).data;
         std.io.sio.swrite(root->selfstr, (u8*)GENERAL_ROOT, strlen(GENERAL_ROOT));
         fs.fileclose(root);
+
+        io.println("[zc] generating compile_commands.json");
+        system("bear -- zc build main");
 
         io.println("[zc] init done");
     } else {
