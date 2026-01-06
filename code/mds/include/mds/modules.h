@@ -43,6 +43,7 @@ void __mods_setup(){
     INJECTION(SIGNAL_INJECT_MOD);     // std.signal
     INJECTION(MEM_SENTINEL_INJECT_MOD);   // std.mem.sentinel
     INJECTION(MEM_SLICES_INJECT_MOD);     // std.mem.slices
+    INJECTION(MEM_TOKENIZE_INJECT_MOD);   // std.mem.tokenizer
     INJECTION(MATH_RAND_INJECT_MOD);      // std.math.random
     INJECTION(CRYPTO_HASH_INJECT_MOD);    // std.crypto.hash
     INJECTION(STR_INJECT_MOD);            // std.str 

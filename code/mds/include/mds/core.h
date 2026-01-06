@@ -23,8 +23,9 @@ struct __core {
             std_mem_allc_raw   raw;
         } allc;
 
-        std_mem_sentinel sentinel;
-        std_mem_slices   slices;
+        std_mem_sentinel  sentinel;
+        std_mem_slices    slices;
+        std_mem_tokenizer tokenizer;
     } mem;
 
     struct {
@@ -77,6 +78,7 @@ void __std_setup(){
     std.mem.allc.raw = *(std_mem_allc_raw*)mInclude(std.mem.allc.raw);
     std.mem.sentinel = *(std_mem_sentinel*)mInclude(std.mem.sentinel);
     std.mem.slices = *(std_mem_slices*)mInclude(std.mem.slices);
+    std.mem.tokenizer = *(std_mem_tokenizer*)mInclude(std.mem.tokenizer);
 
     std.math.random = *(std_math_random*)mInclude(std.math.random);
 	

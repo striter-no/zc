@@ -2,6 +2,7 @@
 #include "allocators/main.h"
 #include "sentinel.h"
 #include "slices.h"
+#include "tokenizer.h"
 
 typedef struct {
     Module _minfo;
@@ -21,11 +22,25 @@ std_mem_slices __std_mem_slices;
 typedef struct {
     Module _minfo;
 
+    option (*tokenize)(void *data, size_t data_size, size_t elsize, void *delim);
+    option (*tokenizeString)(char *valid_cstring, char delim);
+} std_mem_tokenizer;
+std_mem_tokenizer __std_mem_tokenizer;
+
+typedef struct {
+    Module _minfo;
+
     bool   (*is_sentineled)(void *data, size_t data_size, ssize_t el_size, void *sentinel, size_t sentinel_size);
     option (*sentinel)(void *data, size_t data_size, void *sentinel, size_t sentinel_size);
     option (*desentinel)(void *data, size_t data_size, ssize_t el_size, void *sentinel, size_t sentinel_size);
 } std_mem_sentinel;
 std_mem_sentinel __std_mem_sentinel;
+
+void __tokenizer_setup(){
+    __std_mem_tokenizer._minfo = mModuleNew("std.mem.tokenizer");
+    __std_mem_tokenizer.tokenize = __std_mem_tokenizeMemory;
+    __std_mem_tokenizer.tokenizeString = __std_mem_tokenizeString;
+}
 
 void __slices_setup(){
     __std_mem_slices._minfo = mModuleNew("std.mem.slices");
@@ -51,7 +66,9 @@ void __mem_setup(){
     __sentinel_setup();
     __slices_setup();
     __allocators_setup();
+    __tokenizer_setup();
 }
 
 #define MEM_SENTINEL_INJECT_MOD {__std_mem_sentinel._minfo, &__std_mem_sentinel}
 #define MEM_SLICES_INJECT_MOD {__std_mem_slices._minfo, &__std_mem_slices}
+#define MEM_TOKENIZE_INJECT_MOD {__std_mem_tokenizer._minfo, &__std_mem_tokenizer}

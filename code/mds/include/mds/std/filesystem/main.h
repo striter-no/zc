@@ -16,11 +16,11 @@ typedef struct {
     option (*cwd)();
     option (*change_directory)(const char *path);
     option (*list_files)(Directory *dir, bool recursive);
-    option (*list_subdirs)();
+    option (*list_subdirs)(Directory *dir, bool recursive);
     option (*delete_file)();
     option (*delete_dir)();
 
-    option (*freefiles)(array *files);
+    option (*freeentries)(array *entries);
     option (*fullfile)(File *dummy, const char *mode);
     option (*dummyfile)(const char *filename);
     option (*dummydir)(const char *filename);
@@ -41,8 +41,9 @@ void __fs_dirs_setup(){
     __filesystem.cwd = __fs_currentDirectory;
     __filesystem.change_directory = __fs_changeDirectory;
     __filesystem.list_files = __fs_listDirFiles;
+    __filesystem.list_subdirs = __fs_listDirSubdirs;
     __filesystem.dummydir = __fs_dummydir;
-    __filesystem.freefiles = __fs_freeFiles;
+    __filesystem.freeentries = __fs_freeEntries;
 }
 
 void __fs_files_setup(){

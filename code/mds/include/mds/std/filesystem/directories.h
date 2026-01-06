@@ -22,8 +22,8 @@ option __fs_dummydir(const char *path);
 option __fs_changeDirectory(const char *path);
 // option<array*<File*>>
 option __fs_listDirFiles(Directory *zcdir, bool recursive);
-option __fs_freeFiles(array *files);
-option __fs_listDirSubdirs(bool recursive);
+option __fs_freeEntries(array *entries);
+option __fs_listDirSubdirs(Directory *zcdir, bool recursive);
 option __fs_deleteFile();
 option __fs_deleteSubDirectory();
 #ifdef DIRECTORIES_IMPLEMENTATION
@@ -107,8 +107,61 @@ option __fs_listDirFiles(Directory *zcdir, bool recursive){
     return opt(out, sizeof(array), true);
 }
 
-option __fs_listDirSubdirs(bool recursive){
-    return noerropt;
+option __fs_listDirSubdirs(Directory *zcdir, bool recursive){
+    DIR *dir = opendir(zcdir->path);
+    if (dir == NULL) throw(
+        "Fs.ListDir.Dirs: failed to list dirs in directory, opendir() failed",
+        "Fs.ListDir.Dirs.POSIX.Failure",
+        -1
+    );
+    
+    AbstractAllocator *absa = try(global.get(".absa")).data;
+    array *out = try(absa->alloc(absa->real, sizeof(array))).data;
+    if (!out) throw(
+        "Fs.ListDir.Dirs: failed to list dirs in directory, malloc() failed",
+        "Fs.ListDir.Dirs.Malloc.Failed",
+        -2
+    );
+    
+    *out = __array_new();
+
+    struct dirent *entry;
+    struct stat file_stat;
+    char full_path[PATH_MAX];
+    while ((entry = readdir(dir)) != NULL) {
+        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
+            continue;
+        }
+        
+        snprintf(full_path, sizeof(full_path), "%s/%s", zcdir->path, entry->d_name);
+        
+        if (stat(full_path, &file_stat) != 0)
+            warning("Runtime.FS.Warning", "Failed to get info about entry in directory");
+
+        if (S_ISDIR(file_stat.st_mode)){
+            Directory *subdir = try(__fs_dummydir(full_path)).data;
+
+            try(__array_shpushback(
+                out, 
+                mvar(subdir, sizeof(Directory), true)
+            ));
+            if (!recursive) continue;
+            array *tmp = try(__fs_listDirFiles(subdir, true)).data;
+            for (size_t i = 0; i < tmp->len; i++){
+                try(__array_shpushback(
+                    out,
+                    try(__array_at(tmp, i))
+                ));
+            }
+            
+            try(__array_free(tmp));
+            try(absa->free(absa->real, tmp));
+            try(absa->free(absa->real, subdir));
+        }
+    }
+
+    closedir(dir);
+    return opt(out, sizeof(array), true);
 }
 
 option __fs_dummydir(const char *path){
@@ -167,17 +220,17 @@ option __fs_currentDirectory(){
     return opt(out, sizeof(Directory), true);
 }
 
-option __fs_freeFiles(array *files){
-    if (!files) return noerropt;
+option __fs_freeEntries(array *entries){
+    if (!entries) return noerropt;
     AbstractAllocator *absa = try(global.get(".absa")).data;
     
-    __array_dfclean(files, lambda(variable *v){
+    __array_dfclean(entries, lambda(variable *v){
         absa->free(absa->real, v->data);
     });
-    try(__array_free(files));
+    try(__array_free(entries));
 
     
-    try(absa->free(absa->real, files));
+    try(absa->free(absa->real, entries));
     return noerropt;
 }
 

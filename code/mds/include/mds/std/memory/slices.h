@@ -77,7 +77,8 @@ option __std_mem_slice_as_array(Slice slice){
     *out = __array_new();
     try(__array_reserve(out, slice.slice_size));
     for (size_t i = 0; i < slice.slice_size; i++){
-        out->elements[i] = *(variable*)(((char*)slice.data) + i * slice.el_size);
+        // fprintf(stderr, "saa: %zu\n", i);
+        out->elements[i] = mvar(((char*)slice.data) + i * slice.el_size, slice.el_size, false);
     }
 
     return opt(out, sizeof(array), true);

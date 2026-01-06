@@ -133,6 +133,22 @@ const char *GENERAL_CLANGD =
 "    Add:\n"
 "        - \"-std=c++2x\"\n";
 
+option get_curent_proj(){
+    String *out = try(talloc(sizeof(String))).data;
+    
+    var fs = std.fs;
+    Directory *code = try(fs.dummydir("./code")).data;
+
+    array *dirs = try(fs.list_subdirs(code, false)).data;
+    for (size_t i = 0; i < dirs->len; i++){
+        Directory *d = dirs->elements[i].data;
+        std.io.term.println("directory: %s", d->path);
+    }
+    
+    fs.freeentries(dirs);
+    return opt(out, sizeof(String), false);
+}
+
 option fmain(variable *args, size_t argc){
     var io = std.io.term;
     var fmt = std.fmt;
