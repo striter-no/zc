@@ -47,6 +47,7 @@ void __mods_setup(){
     INJECTION(MATH_RAND_INJECT_MOD);      // std.math.random
     INJECTION(CRYPTO_HASH_INJECT_MOD);    // std.crypto.hash
     INJECTION(STR_INJECT_MOD);            // std.str 
+    INJECTION(STD_ASYNC_INJECT_MOD);      // std.async 
     LOADED_MODS = counter;
 }
 

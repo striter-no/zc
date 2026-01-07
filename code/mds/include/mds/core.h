@@ -48,6 +48,7 @@ struct __core {
     std_queue   queue;
     std_htable  htable;
     std_time    time;
+    std_async   async;
 };
 
 extern struct __core std;
@@ -65,6 +66,7 @@ void __std_setup(){
     std.queue = *(std_queue*)mInclude(std.queue);
     std.htable = *(std_htable*)mInclude(std.htable);
     std.time   = *(std_time*)mInclude(std.time);
+    std.async   = *(std_async*)mInclude(std.async);
 
     std.io.sio = *(std_io_stream*)mInclude(std.io.sio);
     std.io.term = *(std_io_term*)mInclude(std.io.term);

@@ -12,6 +12,7 @@
 #include <mds/std/system/main.h>
 #include <mds/std/math/main.h>
 #include <mds/std/crypto/main.h>
+#include <mds/std/async/main.h>
 
 #include <mds/std/_preincl/globals.h>
 #include <mds/std/debug/testing/main.h>
@@ -28,4 +29,5 @@ void __inc_mods_setup(){
     __signal_setup();
     __math_setup();
     __crypto_setup();
+    __async_setup();
 }
