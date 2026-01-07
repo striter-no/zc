@@ -36,10 +36,19 @@ option fmain(variable *args, size_t argc){
     var iter = lambda(void *_event, size_t inx){
         var event = (struct epoll_event*)_event;
         state *ptr = event->data.ptr;
-        if (ptr == NULL)                           try(client_accept    (eplr, event, sock));
-        if (event->events & (EPOLLHUP | EPOLLERR)) try(client_disconnect(eplr, ptr));
-        if (event->events & (EPOLLIN))             try(client_input (eplr, ptr));
-        if (event->events & (EPOLLOUT))            try(client_output(eplr, ptr));
+        if (ptr == NULL){                           
+            try(client_accept(eplr, event, sock)); 
+            return noerropt;
+        }
+        
+        if (event->events & (EPOLLHUP | EPOLLERR)) 
+            try(client_disconnect(eplr, ptr));
+        
+        if (event->events & (EPOLLIN))             
+            try(client_input(eplr, ptr));
+        
+        if (event->events & (EPOLLOUT))            
+            try(client_output(eplr, ptr));
         return noerropt;
     };
 
