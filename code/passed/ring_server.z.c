@@ -84,28 +84,25 @@ option async_input(void *dataptr){
     std.io.term.println("client input...");
     state *st = dataptr;
     var jread = try(std.io.sio.nbio_sread(st->stream));
+    suspend
+
     if (jread.size == 0) {
         std.io.epoll.modify(*st->eplr, st->cli->fd, EPOLLOUT, st);
         return noerropt;
-    } else {
-        if (jread.size < 0){ // gracefully shutted down
-            jread.size *= -1;
-            try(addvar(&st->input_buffer, jread));
-            std.io.epoll.modify(*st->eplr, st->cli->fd, EPOLLOUT, st);
-            return noerropt;
-        }
-        suspend
-        try(addvar(&st->input_buffer, jread));
-        
-        std.io.term.println(
-            "-> %s:%d : (%zu) %.*s\n", 
-            st->cli->ip, st->cli->port, 
-            st->input_buffer.size, st->input_buffer.size, st->input_buffer.data
-        );
-
-        gmovevar(&st->input_buffer, &st->output_buffer);
-        std.io.epoll.modify(*st->eplr, st->cli->fd, EPOLLOUT, st);
     }
+    if (jread.size < 0)
+        return async_disconnect(dataptr);
+
+    try(addvar(&st->input_buffer, jread));
+    
+    std.io.term.println(
+        "-> %s:%d : (%zu) %.*s\n", 
+        st->cli->ip, st->cli->port, 
+        st->input_buffer.size, st->input_buffer.size, st->input_buffer.data
+    );
+
+    gmovevar(&st->input_buffer, &st->output_buffer);
+    std.io.epoll.modify(*st->eplr, st->cli->fd, EPOLLOUT, st);
     
     return noerropt;
 }

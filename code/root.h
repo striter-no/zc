@@ -32,8 +32,6 @@ option __testing_main(variable *args, size_t argc){
 }
 
 option pre_setup(){
-    // std.io.term.println("[globals: %p]", &global);
-
     pmain.allc_raw = std.mem.allc.raw.init();
     pmain.absa_raw = __mem_std_create_absallc(
         __make_abstract_alloc(__alc_raw_allocate, RawAllocator),
@@ -43,7 +41,6 @@ option pre_setup(){
         &pmain.allc_raw
     );
     try(global.save(".absa.raw", np(&pmain.absa_raw)));
-    // std.io.term.println("raw done");
 
     pmain.allc_gpa = try(std.mem.allc.gpa.init()).data;
     pmain.absa = __mem_std_create_absallc(
@@ -64,12 +61,7 @@ option pre_setup(){
         &pmain.allc_bsc
     );
     try(global.save(".absa.bsc", np(&pmain.absa_bsc)));
-    // try(global.save(".absa", np(&pmain.absa_bsc)));
     
-
-    // std.io.term.println("allc_gpa info: %p, pointers: %p real: %p", &pmain.absa, pmain.allc_gpa->pointers, pmain.absa.real);
-    
-    // std.io.term.println("presetup()");
     try(__galc_init());
     return noerropt;
 }

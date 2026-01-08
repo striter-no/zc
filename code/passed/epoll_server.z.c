@@ -88,26 +88,22 @@ option client_input(epoller *eplr, state *ptr){
     if (jread.size == 0) { // end of data
         std.io.epoll.modify(*eplr, ptr->cli->fd, EPOLLOUT, ptr);
         return noerropt;
-    } else {
-        if (jread.size < 0){ // gracefully shutted down
-            jread.size *= -1;
-            try(addvar(&ptr->input_buffer, jread));
-            std.io.epoll.modify(*eplr, ptr->cli->fd, EPOLLOUT, ptr);
-            return noerropt;
-        }
-
-        try(addvar(&ptr->input_buffer, jread));
-        
-        std.io.term.println(
-            "-> %s:%d : (%zu) %.*s\n", 
-            ptr->cli->ip, ptr->cli->port, 
-            ptr->input_buffer.size, ptr->input_buffer.size, ptr->input_buffer.data
-        );
-
-        movevar(&ptr->input_buffer, &ptr->output_buffer);
-        std.io.epoll.modify(*eplr, ptr->cli->fd, EPOLLOUT, ptr);
     }
+    
+    if (jread.size < 0) // gracefully shutted down
+        return client_disconnect(eplr, ptr);
 
+    try(addvar(&ptr->input_buffer, jread));
+    
+    std.io.term.println(
+        "-> %s:%d : (%zu) %.*s\n", 
+        ptr->cli->ip, ptr->cli->port, 
+        ptr->input_buffer.size, ptr->input_buffer.size, ptr->input_buffer.data
+    );
+
+    movevar(&ptr->input_buffer, &ptr->output_buffer);
+    std.io.epoll.modify(*eplr, ptr->cli->fd, EPOLLOUT, ptr);
+    
     return noerropt;
 }
 

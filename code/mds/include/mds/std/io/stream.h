@@ -89,7 +89,7 @@ option __nbio_sread(stream str){
         memcpy(out_buffer + out_size, buffer, ar);
         out_size = ar;
     } else if (ar == 0){ 
-        return opt(out_buffer, -out_size, true); // gracefull shutdown from client
+        return opt(out_buffer, -1, true); // gracefull shutdown from client
     } else if (errno == EAGAIN || errno == EWOULDBLOCK){
         return opt(out_buffer, 0, true);
     } else if (errno == EINTR){
