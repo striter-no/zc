@@ -212,7 +212,9 @@ option fmain(variable *args, size_t argc){
                 "-std=c2x "
                 "-Dmain_file=%s.z.c "
                 "-D_GNU_SOURCE "
-                "-fsanitize=undefined,address "
+                "-fsanitize=undefined,address,leak "
+                // "-fno-omit-frame-pointer "
+                // "-fno-optimize-sibling-calls "
                 "-O0 -g -o " //-Wall -Wextra 
                 "./bin/%s "
                 "./code/%s/subcode/main.c "

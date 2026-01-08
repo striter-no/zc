@@ -32,8 +32,9 @@ option task2(void *arg) {
 option fmain(variable *v, size_t c){
     
     var coro1 = try(std.async.async(task1, NULL, REGULAR_STACK));
+    // std.async.await(coro1.data);
     try(std.async.async(task2, coro1.data, REGULAR_STACK));
 
-    std.async.run();
+    std.async.run(NULL);
     return noerropt;
 }

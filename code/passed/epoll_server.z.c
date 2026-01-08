@@ -22,7 +22,7 @@ option fmain(variable *args, size_t argc){
     var epoll = std.io.epoll;
     
     tcpsock *sock = td(net.create("127.0.0.1", 9000, true)); // true for non-blocking mode
-    epoller *eplr = td(epoll.init());
+    epoller *eplr = td(epoll.init(NULL));
 
     defer(^{
         discard(epoll.close(*eplr));
@@ -84,7 +84,7 @@ option client_disconnect(epoller *eplr, state *ptr){
 }
 
 option client_input(epoller *eplr, state *ptr){
-    var jread = try(std.io.sio.aio_sread(ptr->stream));
+    var jread = try(std.io.sio.nbio_sread(ptr->stream));
     if (jread.size == 0) { // end of data
         std.io.epoll.modify(*eplr, ptr->cli->fd, EPOLLOUT, ptr);
         return noerropt;
@@ -112,7 +112,7 @@ option client_input(epoller *eplr, state *ptr){
 }
 
 option client_output(epoller *eplr, state *ptr){
-    var jwrite_opt = std.io.sio.aio_swrite(ptr->stream, ptr->output_buffer.data, ptr->output_buffer.size);
+    var jwrite_opt = std.io.sio.nbio_swrite(ptr->stream, ptr->output_buffer.data, ptr->output_buffer.size);
     if (is_error(jwrite_opt) && gerror(jwrite_opt).code == -2) {
         int fd = ptr->cli->fd;
         close(fd);

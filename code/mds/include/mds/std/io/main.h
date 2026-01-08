@@ -13,15 +13,15 @@ typedef struct {
 
     option (*sread)(stream str);
     option (*swrite)(stream str, u8* data, size_t actual_sz);
-    option (*aio_sread)(stream str);
-    option (*aio_swrite)(stream str, u8* data, size_t actual_sz);
+    option (*nbio_sread)(stream str);
+    option (*nbio_swrite)(stream str, u8* data, size_t actual_sz);
 } std_io_stream;
 std_io_stream __std_io_stream;
 
 typedef struct {
     Module _minfo;
 
-    option (*init)();
+    option (*init)(void *issuer);
     option (*close)(epoller eplr);
     option (*modify)(epoller eplr, int fd_to_mod, u32 new_events, void *dataptr);
     option (*add)(epoller eplr, int fd_to_add, u32 events, void *dataptr);
@@ -52,8 +52,8 @@ void __si_setup(){
     __std_io_stream.openStream = __openStream;
     __std_io_stream.swrite = __swrite;
     __std_io_stream.sread = __sread;
-    __std_io_stream.aio_swrite = __aio_swrite;
-    __std_io_stream.aio_sread = __aio_sread;
+    __std_io_stream.nbio_swrite = __nbio_swrite;
+    __std_io_stream.nbio_sread = __nbio_sread;
     __std_io_stream.closeStream = __closeStream;
 
     __std_io_epoll._minfo = mModuleNew("std.io.epoll");

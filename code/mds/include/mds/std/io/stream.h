@@ -20,8 +20,8 @@ typedef struct {
 stream __openStream(int fd, size_t read_bfsize, size_t write_bfsize);
 option __sread(stream str);
 option __swrite(stream str, u8 *buff, size_t actual_size);
-option __aio_swrite(stream str, u8 *buff, size_t actual_size);
-option __aio_sread(stream str);
+option __nbio_swrite(stream str, u8 *buff, size_t actual_size);
+option __nbio_sread(stream str);
 void __closeStream(stream *str);
 #ifdef STREAM_IMPLEMENTATION
 
@@ -45,9 +45,9 @@ stream __openStream(int fd, size_t read_bfsize, size_t write_bfsize){
     };
 }
 
-option __aio_swrite(stream str, u8 *buff, size_t actual_size){
+option __nbio_swrite(stream str, u8 *buff, size_t actual_size){
     if (str.fd < 0){
-        throw("Invalid stream descriptor", "AIO.Stream.InvalidFD", -1);
+        throw("Invalid stream descriptor", "nbIO.Stream.InvalidFD", -1);
     }
     
     ssize_t act_size = write(str.fd, buff, actual_size);
@@ -57,22 +57,22 @@ option __aio_swrite(stream str, u8 *buff, size_t actual_size){
         if (errno == EAGAIN || errno == EWOULDBLOCK)
             return opt(NULL, 0, false);
         throw(
-            "AIO Stream write error: error while writing (not eagain or ewouldblock)", 
-            "AIO.Stream.Write.Failed",
+            "nbIO Stream write error: error while writing (not eagain or ewouldblock)", 
+            "nbIO.Stream.Write.Failed",
             1
         );
     }
 
     throw(
-        "AIO.Stream.Write Failed to write, socket closed", 
-        "AIO.Stream.Write.SockClosed",
+        "nbIO.Stream.Write Failed to write, socket closed", 
+        "nbIO.Stream.Write.SockClosed",
         -2
     );
 }
 
-option __aio_sread(stream str){
+option __nbio_sread(stream str){
     if (str.fd < 0){
-        throw("Invalid stream descriptor", "AIO.Stream.InvalidFD", -1);
+        throw("Invalid stream descriptor", "nbIO.Stream.InvalidFD", -1);
     }
 
     size_t out_size = 0;
@@ -83,7 +83,7 @@ option __aio_sread(stream str){
     if (ar > 0){
         out_buffer = try(str.absa->alloc(str.absa->real, out_size + ar)).data;
         if (out_buffer == NULL){
-            throw("AIO Stream read failed, realloc failed","AIO.Stream.Read.Realloc.Failed", -2);
+            throw("nbIO Stream read failed, realloc failed","nbIO.Stream.Read.Realloc.Failed", -2);
         }
 
         memcpy(out_buffer + out_size, buffer, ar);
@@ -91,13 +91,14 @@ option __aio_sread(stream str){
     } else if (ar == 0){ 
         return opt(out_buffer, -out_size, true); // gracefull shutdown from client
     } else if (errno == EAGAIN || errno == EWOULDBLOCK){
-        return opt(out_buffer, out_size, true);
+        return opt(out_buffer, 0, true);
     } else if (errno == EINTR){
-        return opt(out_buffer, out_size, true);
+        return opt(out_buffer, 0, true);
     } else {
-        panic("AIO.Stream.Read.UnreachableHappend");
-        throw(        "AIO.Stream.Read Failed to panic, something gone terribly wrong", 
-            "AIO.Stream.Fatal.FailedPanic", 
+        panic("nbIO.Stream.Read.UnreachableHappend");
+        throw(        
+            "nbIO.Stream.Read Failed to panic, something gone terribly wrong", 
+            "nbIO.Stream.Fatal.FailedPanic", 
             -1
         );
     }

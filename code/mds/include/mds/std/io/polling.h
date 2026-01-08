@@ -15,9 +15,10 @@
 typedef struct {
     struct epoll_event events[MAX_EPOLL_EVENTS];
     int epfd;
+    void *issuer;
 } epoller;
 
-option __epoller_init();
+option __epoller_init(void *issuer);
 option __epoller_close(epoller eplr);
 option __epoller_modify(epoller eplr, int fd_to_mod, u32 new_events, void *dataptr);
 option __epoller_add(epoller eplr, int fd_to_add, u32 events, void *dataptr);
@@ -46,7 +47,7 @@ option __epoller_add(epoller eplr, int fd_to_add, u32 events, void *dataptr){
     return noerropt;
 }
 
-option __epoller_init(){
+option __epoller_init(void *issuer){
     AbstractAllocator *absa = try(global.get(".absa")).data;
 
     epoller *obj = try(absa->alloc(absa->real, sizeof(epoller))).data;
@@ -65,7 +66,7 @@ option __epoller_init(){
             1
         );
     }
-
+    obj->issuer = issuer;
     return opt(obj, sizeof(epoller), true);
 }
 
