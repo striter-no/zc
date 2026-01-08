@@ -1,4 +1,4 @@
-#pragma once
+#ifndef ROOT
 #include "mds/std/_preincl/base.h"
 #include "mds/std/_preincl/globals.h"
 #include "mds/genmod.h"
@@ -119,3 +119,5 @@ void psetup(){
     pmain.main = __main_wrapped;
     pmain._minfo = mModuleNew("main");
 }
+#endif
+#define ROOT
