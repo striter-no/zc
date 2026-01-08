@@ -135,8 +135,8 @@ option __array_index(array *ptr, variable vr){
     if (!ptr) throw("Failed to index element in array", "Array.Index.Ptr.IsNULL", -1);
 
     for (size_t i = 0; i < ptr->len; i++) {
-        if (vr.size == ptr->elements[i].size && ((vr.data == NULL && vr.size != 0) || memcmp(ptr->elements[i].data, vr.data, vr.size) == 0)){
-            return opt(NULL, i, false);
+        if (vis_equal(vr, ptr->elements[i])){
+            return opt(NULL, i, true);
         }
     }
 

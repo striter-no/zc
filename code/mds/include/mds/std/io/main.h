@@ -22,10 +22,10 @@ typedef struct {
     Module _minfo;
 
     option (*init)(void *issuer);
-    option (*close)(epoller eplr);
-    option (*modify)(epoller eplr, int fd_to_mod, u32 new_events, void *dataptr);
-    option (*add)(epoller eplr, int fd_to_add, u32 events, void *dataptr);
-    option (*delete)(epoller eplr, int fd_to_del);
+    option (*close)(epoller *eplr);
+    option (*modify)(epoller *eplr, int fd_to_mod, u32 new_events, void *dataptr);
+    option (*add)(epoller *eplr, int fd_to_add, u32 events, void *dataptr);
+    option (*delete)(epoller *eplr, int fd_to_del);
     option (*waitev)(epoller *eplr, int timeout);
 } std_io_epoll;
 std_io_epoll __std_io_epoll;

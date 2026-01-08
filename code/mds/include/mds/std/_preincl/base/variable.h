@@ -167,7 +167,7 @@ option __vrb_foreach(variable *vb, size_t elsize, option (*lmbd)(void* arg, size
 }
 
 bool vis_equal(variable v1, variable v2){
-    if (v1.data == NULL && v2.data == NULL) return true;
+    if (v1.data == NULL && v2.data == NULL && v1.size == v2.size) return true;
     if (v1.data == NULL || v2.data == NULL) return false;
     if (v1.size != v2.size)                 return false;
     if (v1.size == 0 && v2.size == 0)       return v1.data == v2.data;

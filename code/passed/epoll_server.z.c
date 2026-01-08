@@ -25,13 +25,13 @@ option fmain(variable *args, size_t argc){
     epoller *eplr = td(epoll.init(NULL));
 
     defer(^{
-        discard(epoll.close(*eplr));
+        discard(epoll.close(eplr));
         discard(net.close(sock));
     });
 
     try(net.bind(sock));
     try(net.listen(sock, 20));
-    epoll.add(*eplr, sock->fd, EPOLLIN, NULL);
+    epoll.add(eplr, sock->fd, EPOLLIN, NULL);
     
     var iter = lambda(void *_event, size_t inx){
         var event = (struct epoll_event*)_event;
@@ -69,7 +69,7 @@ option client_accept(epoller *eplr, struct epoll_event *event, tcpsock *sock){
     };
     clistate->stream = std.io.sio.openStream(clistate->cli->fd, 0, 0); // sizes in async mode doesn't matter
 
-    std.io.epoll.add(*eplr, clistate->cli->fd, EPOLLIN, clistate);
+    std.io.epoll.add(eplr, clistate->cli->fd, EPOLLIN, clistate);
     return noerropt;
 }
 
@@ -78,7 +78,7 @@ option client_disconnect(epoller *eplr, state *ptr){
     close(fd);
     free(ptr->cli);
     free(ptr);
-    std.io.epoll.delete(*eplr, fd);
+    std.io.epoll.delete(eplr, fd);
 
     return noerropt;
 }
@@ -86,7 +86,7 @@ option client_disconnect(epoller *eplr, state *ptr){
 option client_input(epoller *eplr, state *ptr){
     var jread = try(std.io.sio.nbio_sread(ptr->stream));
     if (jread.size == 0) { // end of data
-        std.io.epoll.modify(*eplr, ptr->cli->fd, EPOLLOUT, ptr);
+        std.io.epoll.modify(eplr, ptr->cli->fd, EPOLLOUT, ptr);
         return noerropt;
     }
     
@@ -102,7 +102,7 @@ option client_input(epoller *eplr, state *ptr){
     );
 
     movevar(&ptr->input_buffer, &ptr->output_buffer);
-    std.io.epoll.modify(*eplr, ptr->cli->fd, EPOLLOUT, ptr);
+    std.io.epoll.modify(eplr, ptr->cli->fd, EPOLLOUT, ptr);
     
     return noerropt;
 }
@@ -114,13 +114,13 @@ option client_output(epoller *eplr, state *ptr){
         close(fd);
         free(ptr->cli);
         free(ptr);
-        std.io.epoll.delete(*eplr, fd);
+        std.io.epoll.delete(eplr, fd);
         return noerropt;
     }
 
     var jwrite = tv(jwrite_opt);
     if (jwrite.size == 0 || jwrite.size == ptr->output_buffer.size) { // end of data
-        std.io.epoll.modify(*eplr, ptr->cli->fd, EPOLLIN, ptr);
+        std.io.epoll.modify(eplr, ptr->cli->fd, EPOLLIN, ptr);
         delvar(&ptr->output_buffer);
         return noerropt;
     } else ptr->output_buffer.size -= jwrite.size;
