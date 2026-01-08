@@ -1,4 +1,4 @@
-#pragma once
+#ifndef TABLE_HEADER
 #include <mds/std/_preincl/base.h>
 #include <mds/std/_preincl/globals.h>
 #include "array.h"
@@ -212,3 +212,5 @@ option __kvtable_dfclean(kvtable *kt, void (^keys_defer)(variable *key), void (^
 
 
 #endif
+#endif
+#define TABLE_HEADER

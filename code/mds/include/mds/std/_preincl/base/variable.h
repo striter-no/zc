@@ -1,4 +1,4 @@
-#pragma once
+#ifndef VARIABLE_HEADER
 #include "preproc.h"
 
 void __vrb_clone(struct variable *self, struct variable vb);
@@ -177,3 +177,5 @@ bool vis_equal(variable v1, variable v2){
 
 
 #endif
+#endif
+#define VARIABLE_HEADER

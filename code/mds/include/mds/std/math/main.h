@@ -1,4 +1,4 @@
-#pragma once
+#ifndef MATH_MAIN_HEADER
 #include <mds/genmod.h>
 #include "random.h"
 
@@ -27,3 +27,6 @@ void __math_setup(){
 }
 
 #define MATH_RAND_INJECT_MOD {__std_math_random_struct._minfo, &__std_math_random_struct}
+
+#endif
+#define MATH_MAIN_HEADER

@@ -1,4 +1,4 @@
-#pragma once
+#ifndef ABSTRACT_HEADER
 #include <mds/std/_preincl/base/types.h>
 
 typedef struct {
@@ -32,3 +32,5 @@ AbstractAllocator __mem_std_create_absallc(
 #define __make_abstract_zalloc(func, alctype) lambda(void *allc, size_t num_elements, size_t el_size){ return func((alctype*)allc, num_elements, el_size); }
 #define __make_abstract_realloc(func, alctype) lambda(void *allc, void *ptr, size_t new_bytes){ return func((alctype*)allc, ptr, new_bytes); }
 #define __make_abstract_free(func, alctype) lambda(void *allc, void *ptr){ return func((alctype*)allc, ptr); }
+#endif
+#define ABSTRACT_HEADER

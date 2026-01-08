@@ -1,4 +1,4 @@
-#pragma once
+#ifndef FILESYSTEM_MAIN_HEADER
 #include <mds/genmod.h>
 #include "files.h"
 #include "directories.h"
@@ -61,3 +61,5 @@ void __fs_setup(){
 }
 
 #define FS_INJECT_MOD {__filesystem._minfo, &__filesystem}
+#endif
+#define FILESYSTEM_MAIN_HEADER

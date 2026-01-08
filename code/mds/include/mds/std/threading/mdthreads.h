@@ -1,4 +1,4 @@
-#pragma once
+#ifndef MDTHREADS_HEADER
 
 #include <pthread.h>
 #include <mds/std/_preincl/base.h>
@@ -129,3 +129,5 @@ option __thr_exit(void *retval){
 }
 
 #endif
+#endif
+#define MDTHREADS_HEADER

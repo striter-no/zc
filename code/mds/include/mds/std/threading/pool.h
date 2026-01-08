@@ -1,4 +1,4 @@
-#pragma once
+#ifndef POOL_HEADER
 #include "mdthreads.h"
 #include "awaiter.h"
 #include "conditions.h"
@@ -17,3 +17,6 @@ typedef struct {
     queue input_tasks;
 } ThreadPool;
 
+
+#endif
+#define POOL_HEADER

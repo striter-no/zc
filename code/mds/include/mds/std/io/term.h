@@ -1,4 +1,4 @@
-#pragma once
+#ifndef TERM_HEADER
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
@@ -62,3 +62,5 @@ void __println(const char *format, ...){
 
 
 #endif
+#endif
+#define TERM_HEADER

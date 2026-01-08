@@ -1,4 +1,4 @@
-#pragma once
+#ifndef TOKENIZER_HEADER
 #include <mds/std/_preincl/globals.h>
 #include <mds/std/containers/array.h>
 #include "sentinel.h"
@@ -106,3 +106,5 @@ option __std_mem_tokenizeString(
 
     return r;
 }
+#endif
+#define TOKENIZER_HEADER

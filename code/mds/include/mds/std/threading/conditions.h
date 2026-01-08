@@ -1,4 +1,4 @@
-#pragma once
+#ifndef CONDITIONS_HEADER
 #include <pthread.h>
 #include <mds/std/_preincl/base.h>
 #include <mds/std/_preincl/defs.h>
@@ -167,3 +167,5 @@ option __cnd_signal(Condt *cnd){
 
 
 #endif
+#endif
+#define CONDITIONS_HEADER

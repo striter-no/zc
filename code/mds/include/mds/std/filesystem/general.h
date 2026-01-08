@@ -1,4 +1,4 @@
-#pragma once
+#ifndef GENERAL_HEADER
 #include "mds/std/_preincl/base.h"
 #include "mds/std/io/stream.h"
 #include <mds/std/io/main.h>
@@ -65,3 +65,5 @@ bool __fs_is_file(const char* path) {
 
 
 #endif
+#endif
+#define GENERAL_HEADER

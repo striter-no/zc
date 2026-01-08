@@ -1,4 +1,4 @@
-#pragma once
+#ifndef SENTINEL_HEADER
 #include "mds/std/_preincl/base.h"
 #include "mds/std/containers/array.h"
 
@@ -60,3 +60,5 @@ option __std_mem_desentinelData(void *data, size_t data_size, ssize_t el_size, v
 
 
 #endif
+#endif
+#define SENTINEL_HEADER

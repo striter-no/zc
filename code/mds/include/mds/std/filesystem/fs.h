@@ -1,4 +1,4 @@
-#pragma once
+#ifndef FS_HEADER
 #include "mds/std/_preincl/base.h"
 #include "mds/std/io/stream.h"
 #include <mds/std/io/main.h>
@@ -30,3 +30,5 @@ option __fs_movePath(){
 
 
 #endif
+#endif
+#define FS_HEADER

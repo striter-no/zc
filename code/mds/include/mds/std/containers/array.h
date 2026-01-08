@@ -1,4 +1,4 @@
-#pragma once
+#ifndef ARRAY_HEADER
 #include <mds/std/_preincl/base.h>
 
 #include <string.h>
@@ -253,3 +253,5 @@ option __array_refat(array *ptr, size_t index){
 
 
 #endif
+#endif
+#define ARRAY_HEADER

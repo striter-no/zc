@@ -1,4 +1,4 @@
-#pragma once
+#ifndef BASE_HEADER
 #include "defs.h"
 #include "base/option.h"
 #include "base/variable.h"
@@ -55,3 +55,5 @@ void __base_deffering(__dfobject **dfobject){
                                         __make_base_deferer(NULL, (void (^)(void))func): \
                                         __make_base_deferer((void (*)(void))func, NULL);\
     __LINE__##dfobject; /*just to get rid of unused-variable warning*/
+#endif
+#define BASE_HEADER

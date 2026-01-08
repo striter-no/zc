@@ -1,4 +1,4 @@
-#pragma once
+#ifndef AWAITER_HEADER
 #include <pthread.h>
 #include <mds/std/_preincl/base.h>
 #include <mds/std/_preincl/defs.h>
@@ -55,3 +55,5 @@ option __awt_create(Condt *cnd_ptr, MUTEX_TYPE mtx_type){
 
 
 #endif
+#endif
+#define AWAITER_HEADER

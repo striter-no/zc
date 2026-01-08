@@ -1,4 +1,4 @@
-#pragma once
+#ifndef GALLC_HEADER
 #include <mds/std/_preincl/globals.h>
 #include <mds/std/memory/allocators/abstract.h>
 #include <mds/std/memory/allocators/generalPurpose.h>
@@ -59,3 +59,5 @@ option __galc_init(){
 void __galc_end(){
     discard(__alc_gpa_end(gpa));
 }
+#endif
+#define GALLC_HEADER

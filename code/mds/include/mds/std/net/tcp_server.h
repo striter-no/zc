@@ -1,4 +1,4 @@
-#pragma once
+#ifndef TCP_SERVER_HEADER
 
 #include <stdio.h>
 #include <string.h>
@@ -152,3 +152,5 @@ option __tcp_serv_bind(struct TCPServSocket *sock){
 
 
 #endif
+#endif
+#define TCP_SERVER_HEADER

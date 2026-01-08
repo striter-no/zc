@@ -1,4 +1,4 @@
-#pragma once
+#ifndef MUTEXES_HEADER
 #include "mds/std/_preincl/base/preproc.h"
 #include <pthread.h>
 #include <mds/std/_preincl/base.h>
@@ -79,3 +79,5 @@ option __mtx_free(Mutex *mtx){
 
 
 #endif
+#endif
+#define MUTEXES_HEADER

@@ -1,4 +1,4 @@
-#pragma once
+#ifndef THREADING_MAIN_HEADER
 #include <mds/genmod.h>
 #include "conditions.h"
 #include "mdthreads.h"
@@ -100,3 +100,5 @@ void __multiprocessing_setup(){
 #define MTX_INJECT_MOD   {__std_mutex_struct._minfo, &__std_mutex_struct}
 #define CNDT_INJECT_MOD  {__std_condt_struct._minfo, &__std_condt_struct}
 #define AWAIT_INJECT_MOD {__std_awaiter_struct._minfo, &__std_awaiter_struct}
+#endif
+#define THREADING_MAIN_HEADER

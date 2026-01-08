@@ -1,4 +1,4 @@
-#pragma once
+#ifndef CORE_HEADER
 #include "modules.h"
 
 struct __core {
@@ -90,3 +90,6 @@ void __std_setup(){
 void __core_setup(){
     __std_setup();
 }
+
+#endif
+#define CORE_HEADER

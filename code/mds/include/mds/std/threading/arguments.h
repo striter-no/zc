@@ -1,4 +1,4 @@
-#pragma once
+#ifndef ARGUMENTS_HEADER
 #include <mds/std/_preincl/base.h>
 #include <mds/std/_preincl/defs.h>
 #include <mds/std/containers/table.h>
@@ -69,3 +69,5 @@ option end_args(Arguments *args){
 
 
 #endif
+#endif
+#define ARGUMENTS_HEADER

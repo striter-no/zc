@@ -1,4 +1,4 @@
-#pragma once
+#ifndef GENERALPURPOSE_HEADER
 #include "mds/std/_preincl/base.h"
 #include "mds/std/containers/array.h"
 #include "mds/std/io/main.h"
@@ -160,3 +160,5 @@ option __alc_gpa_reallocate(GeneralPurposeAllocator *allc, void *pointer, size_t
 
 
 #endif
+#endif
+#define GENERALPURPOSE_HEADER

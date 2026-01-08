@@ -1,4 +1,4 @@
-#pragma once
+#ifndef COLORS_HEADER
 
 struct ANSI {
     struct {
@@ -84,3 +84,5 @@ void __ansi_setup(){
 }
 
 #endif
+#endif
+#define COLORS_HEADER

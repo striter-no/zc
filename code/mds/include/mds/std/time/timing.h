@@ -1,4 +1,4 @@
-#pragma once
+#ifndef TIMING_HEADER
 #include "mds/std/_preincl/base/preproc.h"
 #include <errno.h>
 #include <time.h>
@@ -94,3 +94,5 @@ i64 __time_from_seconds     (i64  s){
 
 
 #endif
+#endif
+#define TIMING_HEADER

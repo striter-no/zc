@@ -1,4 +1,4 @@
-#pragma once
+#ifndef MODULES_HEADER
 #include <string.h>
 
 #include "mods.h"
@@ -85,3 +85,5 @@ static inline const struct ModInfo *__mf__minfo(const char *name){
 //     void* _ptr = mInclude(mod); \
 //     (*(__typeof__(_ptr)*)_ptr); \
 // })
+#endif
+#define MODULES_HEADER

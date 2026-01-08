@@ -1,4 +1,4 @@
-#pragma once
+#ifndef CONTAINERS_MAIN_HEADER
 #include <mds/std/_preincl/base.h>
 #include <mds/genmod.h>
 
@@ -139,3 +139,6 @@ void __containers_setup(){
 #define KVT_INJECT_MOD {__kvtable_struct._minfo, &__kvtable_struct}
 #define QUEUE_INJECT_MOD {__queue_struct._minfo, &__queue_struct}
 #define HSHT_INJECT_MOD {__hashtable_struct._minfo, &__hashtable_struct}
+
+#endif
+#define CONTAINERS_MAIN_HEADER

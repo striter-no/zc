@@ -1,4 +1,4 @@
-#pragma once
+#ifndef CRYPTO_MAIN_HEADER
 #include <mds/genmod.h>
 #include "hash.h"
 
@@ -21,3 +21,5 @@ void __crypto_setup(){
 }
 
 #define CRYPTO_HASH_INJECT_MOD {__std_crypto_hash_struct._minfo, &__std_crypto_hash_struct}
+#endif
+#define CRYPTO_MAIN_HEADER

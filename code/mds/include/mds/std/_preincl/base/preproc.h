@@ -1,4 +1,4 @@
-#pragma once
+#ifndef PREPROC_HEADER
 #include "types.h"
 #include "../defs.h"
 
@@ -114,3 +114,6 @@ static inline option __fn_throw(const char *msg, const char *type, int code){
 //        i_##__LINE__ < (arr).size; \
 //        ++i_##__LINE__\
 //    )
+
+#endif
+#define PREPROC_HEADER

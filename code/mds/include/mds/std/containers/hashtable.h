@@ -1,4 +1,4 @@
-#pragma once
+#ifndef HASHTABLE_HEADER
 #include <mds/std/_preincl/base.h>
 #include <stdbool.h>
 #include "array.h"
@@ -243,3 +243,5 @@ option __hsht_set(hashtable *ht, variable key, variable val){
 
 
 #endif
+#endif
+#define HASHTABLE_HEADER

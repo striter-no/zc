@@ -1,4 +1,4 @@
-#pragma once
+#ifndef TYPES_HEADER
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -77,3 +77,6 @@ void  *tdf    (option opt, void (^_defer)()); // done
 
 bool  is_error(option opt); // done
 error gerror  (option opt); // done
+
+#endif
+#define TYPES_HEADER

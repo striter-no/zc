@@ -1,4 +1,4 @@
-#pragma once
+#ifndef MEMORY_MAIN_HEADER
 #include "allocators/main.h"
 #include "sentinel.h"
 #include "slices.h"
@@ -72,3 +72,5 @@ void __mem_setup(){
 #define MEM_SENTINEL_INJECT_MOD {__std_mem_sentinel._minfo, &__std_mem_sentinel}
 #define MEM_SLICES_INJECT_MOD {__std_mem_slices._minfo, &__std_mem_slices}
 #define MEM_TOKENIZE_INJECT_MOD {__std_mem_tokenizer._minfo, &__std_mem_tokenizer}
+#endif
+#define MEMORY_MAIN_HEADER

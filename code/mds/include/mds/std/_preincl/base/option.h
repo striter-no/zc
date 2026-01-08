@@ -1,4 +1,4 @@
-#pragma once
+#ifndef OPTION_HEADER
 #include "preproc.h"
 
 option __opt_catch(option *self, int (^lmbd)(option *err));
@@ -90,3 +90,5 @@ void *td(option opt){
 
 
 #endif
+#endif
+#define OPTION_HEADER

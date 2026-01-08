@@ -1,4 +1,4 @@
-#pragma once
+#ifndef METHODS_HEADER
 #include "preproc.h"
 #include <Block.h>
 
@@ -18,3 +18,5 @@
 
 
 #endif
+#endif
+#define METHODS_HEADER

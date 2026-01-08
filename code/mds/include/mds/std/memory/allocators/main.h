@@ -1,4 +1,4 @@
-#pragma once
+#ifndef ALLOCATORS_MAIN_HEADER
 #include <mds/genmod.h>
 #include "basic.h"
 #include "generalPurpose.h"
@@ -100,3 +100,6 @@ void __allocators_setup(){
 #define BASIC_ALLC_INJECT_MOD {__std_mem_allc_basic_struct._minfo, &__std_mem_allc_basic_struct}
 #define ARENA_ALLC_INJECT_MOD {__std_mem_allc_arena_struct._minfo, &__std_mem_allc_arena_struct}
 #define GPA_ALLC_INJECT_MOD {__std_mem_allc_gpa_struct._minfo, &__std_mem_allc_gpa_struct}
+
+#endif
+#define ALLOCATORS_MAIN_HEADER

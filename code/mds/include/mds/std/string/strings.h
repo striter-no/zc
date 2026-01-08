@@ -1,4 +1,4 @@
-#pragma once
+#ifndef STRINGS_HEADER
 #include <mds/std/_preincl/base.h>
 #include <mds/std/_preincl/defs.h>
 #include <mds/std/containers/array.h>
@@ -361,3 +361,5 @@ bool __std_str_startswith(String self, String target){
 
 
 #endif
+#endif
+#define STRINGS_HEADER

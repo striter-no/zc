@@ -1,4 +1,4 @@
-#pragma once
+#ifndef TESTING_MAIN_HEADER
 #include "mds/std/io/main.h"
 
 typedef struct {
@@ -57,3 +57,5 @@ $test("basic allocator"){
     return noerropt;
 }
 */
+#endif
+#define TESTING_MAIN_HEADER

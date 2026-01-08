@@ -1,4 +1,4 @@
-#pragma once
+#ifndef GENMOD_HEADER
 
 #include <mds/std/_preincl/defs.h>
 
@@ -15,3 +15,5 @@ Module mModuleNew(
         .name = name
     };
 }
+#endif
+#define GENMOD_HEADER

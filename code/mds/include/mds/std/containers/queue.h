@@ -1,4 +1,4 @@
-#pragma once
+#ifndef QUEUE_HEADER
 #include <mds/std/_preincl/base.h>
 #include "array.h"
 
@@ -69,3 +69,5 @@ option __queue_push(queue *q, variable vr){
 
 
 #endif
+#endif
+#define QUEUE_HEADER

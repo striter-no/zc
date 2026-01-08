@@ -1,4 +1,4 @@
-#pragma once
+#ifndef ASYNC_API_HEADER
 #include <mds/std/_preincl/base.h>
 #include <mds/std/_preincl/globals.h>
 #include <mds/std/memory/allocators/abstract.h>
@@ -223,3 +223,5 @@ option __std_async_run(coro *main_ptr){
     __std_async_raw_asyncrun(main_ptr, mn_lambda);
     return output;
 }
+#endif
+#define ASYNC_API_HEADER

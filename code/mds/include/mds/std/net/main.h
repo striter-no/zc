@@ -1,7 +1,7 @@
+#ifndef NET_MAIN_HEADER
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif // for accept4
-#pragma once
 
 #include <mds/genmod.h>
 #include <stdio.h>
@@ -63,3 +63,5 @@ void __net_setup(){
 
 #define TCP_SERV_INJECT_MOD {__tcp_serv._minfo, &__tcp_serv}
 #define TCP_CLI_INJECT_MOD  {__tcp_cli._minfo, &__tcp_cli}
+#endif
+#define NET_MAIN_HEADER

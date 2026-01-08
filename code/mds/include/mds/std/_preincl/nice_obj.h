@@ -1,4 +1,4 @@
-#pragma once
+#ifndef NICE_OBJ_HEADER
 #include <string.h>
 
 
@@ -17,3 +17,6 @@ struct object {
 // void copyo(){}
 // void shallow_copyo(){}
 // void moveo(){}
+
+#endif
+#define NICE_OBJ_HEADER

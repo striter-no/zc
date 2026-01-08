@@ -1,4 +1,4 @@
-#pragma once
+#ifndef GLOBALS_HEADER
 #include "base.h"
 // #include <mds/std/threading/arguments.h>
 #include <mds/std/memory/allocators/abstract.h>
@@ -140,3 +140,5 @@ option __global_fn_copy(char *key, variable value){
 }
 
 #endif
+#endif
+#define GLOBALS_HEADER

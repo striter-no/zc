@@ -1,4 +1,4 @@
-#pragma once
+#ifndef TCP_CLIENT_HEADER
 #include "mds/std/_preincl/base.h"
 #include "mds/std/io/stream.h"
 #include <mds/std/_preincl/defs.h>
@@ -112,3 +112,5 @@ void __tcp_client_end(TCPClientSock *sock){
 
 
 #endif
+#endif
+#define TCP_CLIENT_HEADER

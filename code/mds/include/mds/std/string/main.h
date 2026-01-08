@@ -1,4 +1,4 @@
-#pragma once
+#ifndef STRING_MAIN_HEADER
 #include <mds/genmod.h>
 #include "mds/std/string/fmt.h"
 #include "./strings.h"
@@ -90,3 +90,5 @@ void __strings_setup(){
 
 #define FMT_INJECT_MOD {__fmt._minfo, &__fmt}
 #define STR_INJECT_MOD {__std_str._minfo, &__std_str}
+#endif
+#define STRING_MAIN_HEADER

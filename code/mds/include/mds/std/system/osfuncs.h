@@ -1,5 +1,7 @@
-#pragma once
+#ifndef OSFUNCS_HEADER
 #ifdef OSFUNCS_IMPLEMENTATION
 
 
 #endif
+#endif
+#define OSFUNCS_HEADER

@@ -1,4 +1,4 @@
-#pragma once
+#ifndef SYSTEM_MAIN_HEADER
 #include <mds/genmod.h>
 #include "signals.h"
 
@@ -25,3 +25,5 @@ void __signal_setup(){
 }
 
 #define SIGNAL_INJECT_MOD {__std_signal_struct._minfo, &__std_signal_struct}
+#endif
+#define SYSTEM_MAIN_HEADER

@@ -1,4 +1,4 @@
-#pragma once
+#ifndef POLLING_HEADER
 #include <stdio.h>
 #include <stdarg.h>
 #include <unistd.h>
@@ -132,3 +132,5 @@ option __epoller_waitev(epoller *eplr, int timeout){
 
 
 #endif
+#endif
+#define POLLING_HEADER

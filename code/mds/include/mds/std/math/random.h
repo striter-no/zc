@@ -1,4 +1,4 @@
-#pragma once
+#ifndef RANDOM_HEADER
 #include "mds/std/_preincl/base.h"
 
 typedef struct {
@@ -82,3 +82,5 @@ option __math_rnd_micro_rand(u8 *state){
 
 
 #endif
+#endif
+#define RANDOM_HEADER

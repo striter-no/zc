@@ -1,4 +1,4 @@
-#pragma once
+#ifndef HASH_HEADER
 #include "mds/std/_preincl/base.h"
 
 option __crypto_hash_fletcher32(const u16* data, size_t len) ;
@@ -47,3 +47,5 @@ option __crypto_hash_fletcher32(const u16* data, size_t len) {
 
 
 #endif
+#endif
+#define HASH_HEADER

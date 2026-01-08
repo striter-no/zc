@@ -1,4 +1,4 @@
-#pragma once
+#ifndef MODS_HEADER
 
 #include <mds/std/_preincl/defs.h>
 #include <mds/std/io/main.h>
@@ -31,3 +31,5 @@ void __inc_mods_setup(){
     __crypto_setup();
     __async_setup();
 }
+#endif
+#define MODS_HEADER

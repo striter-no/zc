@@ -1,4 +1,4 @@
-#pragma once
+#ifndef IO_MAIN_HEADER
 #include <mds/genmod.h>
 #include "term.h"
 #include "stream.h"
@@ -68,3 +68,6 @@ void __si_setup(){
 #define TERMIO_INJECT_MOD {__std_io_term._minfo, &__std_io_term}
 #define STREAMIO_INJECT_MOD {__std_io_epoll._minfo, &__std_io_epoll}
 #define EPOLLIO_INJECT_MOD {__std_io_stream._minfo, &__std_io_stream}
+
+#endif
+#define IO_MAIN_HEADER

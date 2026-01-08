@@ -1,4 +1,4 @@
-#pragma once
+#ifndef DIRECTORIES_HEADER
 #include "mds/std/_preincl/base.h"
 #include "mds/std/io/stream.h"
 #include <mds/std/io/main.h>
@@ -236,3 +236,5 @@ option __fs_freeEntries(array *entries){
 
 
 #endif
+#endif
+#define DIRECTORIES_HEADER

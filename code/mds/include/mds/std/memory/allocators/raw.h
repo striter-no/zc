@@ -1,4 +1,4 @@
-#pragma once
+#ifndef RAW_HEADER
 #include "mds/std/_preincl/base.h"
 
 typedef struct {
@@ -81,3 +81,5 @@ option __alc_raw_zeroalloc(RawAllocator *allc, size_t num_elements, size_t one_e
 
 
 #endif
+#endif
+#define RAW_HEADER

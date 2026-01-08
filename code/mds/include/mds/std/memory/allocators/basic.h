@@ -1,4 +1,4 @@
-#pragma once
+#ifndef BASIC_HEADER
 #include "mds/std/_preincl/base.h"
 #include "mds/std/containers/array.h"
 #include <mds/std/containers/hashtable.h>
@@ -148,3 +148,5 @@ option __alc_basic_zeroalloc(BasicAllocator *allc, size_t num_elements, size_t o
 
 
 #endif
+#endif
+#define BASIC_HEADER

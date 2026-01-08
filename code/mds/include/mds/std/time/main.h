@@ -1,4 +1,4 @@
-#pragma once
+#ifndef TIME_MAIN_HEADER
 #include <mds/genmod.h>
 #include "timing.h"
 
@@ -32,3 +32,5 @@ void __time_setup(){
 }
 
 #define TIME_INJECT_MOD {__std_time_struct._minfo, &__std_time_struct}
+#endif
+#define TIME_MAIN_HEADER

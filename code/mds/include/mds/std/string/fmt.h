@@ -1,4 +1,4 @@
-#pragma once
+#ifndef FMT_HEADER
 #include <mds/std/_preincl/base.h>
 #include <mds/std/_preincl/defs.h>
 #include <mds/std/_preincl/globals.h>
@@ -46,3 +46,5 @@ option format(const char fmt[], ...){
 
 
 #endif
+#endif
+#define FMT_HEADER

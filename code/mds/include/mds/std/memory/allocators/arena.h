@@ -1,4 +1,4 @@
-#pragma once
+#ifndef ARENA_HEADER
 #include "mds/std/_preincl/base.h"
 #include "mds/std/containers/array.h"
 #include <mds/std/containers/hashtable.h>
@@ -77,3 +77,5 @@ option __alc_arena_end(ArenaAllocator *allc){
 
 
 #endif
+#endif
+#define ARENA_HEADER

@@ -1,4 +1,4 @@
-#pragma once
+#ifndef SIGNALS_HEADER
 #include "mds/std/_preincl/base/preproc.h"
 #include <signal.h>
 #include <unistd.h>
@@ -68,3 +68,5 @@ option __signal_register(NAMED_SIGNALS vsignal, void (*handler)(int sign)){
 
 
 #endif
+#endif
+#define SIGNALS_HEADER

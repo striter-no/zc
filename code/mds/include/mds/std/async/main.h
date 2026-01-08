@@ -1,4 +1,4 @@
-#pragma once
+#ifndef ASYNC_MAIN_HEADER
 #include <mds/genmod.h>
 #include "async_api.h"
 #include "async_polling.h"
@@ -34,3 +34,5 @@ void __async_setup(){
 }
 
 #define STD_ASYNC_INJECT_MOD {__async_struct._minfo, &__async_struct}
+#endif
+#define ASYNC_MAIN_HEADER

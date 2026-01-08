@@ -1,4 +1,4 @@
-#pragma once
+#ifndef DEFS_HEADER
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -25,3 +25,5 @@ typedef double f64;
 #ifndef min
 #define min(a, b) ((a) < (b)? (a): (b))
 #endif
+#endif
+#define DEFS_HEADER

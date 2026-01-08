@@ -1,4 +1,4 @@
-#pragma once
+#ifndef FILES_HEADER
 #include "mds/std/_preincl/base.h"
 #include "mds/std/_preincl/globals.h"
 #include "mds/std/memory/allocators/abstract.h"
@@ -147,3 +147,5 @@ option __fs_dummyfile(const char *filename){
 
 
 #endif
+#endif
+#define FILES_HEADER

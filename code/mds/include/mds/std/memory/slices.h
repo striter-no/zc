@@ -1,4 +1,4 @@
-#pragma once
+#ifndef SLICES_HEADER
 #include "mds/std/_preincl/base.h"
 #include "mds/std/containers/array.h"
 
@@ -191,3 +191,5 @@ option __std_mem_slice_convraw(Slice *raw, size_t el_size){
 
 
 #endif
+#endif
+#define SLICES_HEADER

@@ -1,4 +1,4 @@
-#pragma once
+#ifndef STREAM_HEADER
 #include <string.h>
 #include <errno.h>
 #include <stdio.h>
@@ -132,3 +132,5 @@ void __closeStream(stream *str){
 
 
 #endif
+#endif
+#define STREAM_HEADER
