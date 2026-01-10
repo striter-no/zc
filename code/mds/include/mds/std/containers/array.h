@@ -115,7 +115,7 @@ void __array_dfclean(array *ptr, void (^_defer)(variable *vr)){
     if (!ptr) return;
 
     for (size_t i = 0; i < ptr->len; i++){
-        _defer(&ptr->elements[i]);
+        if(_defer) _defer(&ptr->elements[i]);
         delvar(&ptr->elements[i]);
     }
 }

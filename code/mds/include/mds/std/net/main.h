@@ -35,7 +35,7 @@ typedef struct {
     TCPClientSock (*create)(
         const char serv_ip[IPV4_ADDRLEN],
         u16        serv_port,
-        bool       is_blocking
+        bool       is_nonblocking
     );
     option (*initSocket)(TCPClientSock *sock);
     option (*connect)(TCPClientSock *sock);

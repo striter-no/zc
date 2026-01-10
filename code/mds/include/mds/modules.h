@@ -4,6 +4,7 @@
 #include "mods.h"
 #include "genmod.h"
 #include "gallc.h"
+#include <mds/std/_preincl/defer.h>
 
 #define INJECTION(LC_INJ) {{modules_table[counter++] = (struct ModInfo)LC_INJ; if (counter % 10 == 0 && counter != 0){modules_table = realloc(modules_table, sizeof(struct ModInfo) * counter * 2);}}}
 
@@ -59,6 +60,13 @@ static inline const void *__mf_mInclude(const char *name){
     }
 
     return NULL;
+}
+
+void mCoreDynamicInjection(struct ModInfo info){
+    modules_table[LOADED_MODS++] = info; 
+    if (LOADED_MODS % 10 == 0 && LOADED_MODS != 0){
+        modules_table = realloc(modules_table, sizeof(struct ModInfo) * LOADED_MODS * 2);
+    }
 }
 
 static inline const struct ModInfo *__mf__minfo(const char *name){

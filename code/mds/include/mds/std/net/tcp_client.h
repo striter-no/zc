@@ -23,7 +23,7 @@ typedef struct {
     bool is_blocking;
 } TCPClientSock;
 
-TCPClientSock __tcp_client_create(const char serv_ip[IPV4_ADDRLEN],u16        serv_port,bool       is_blocking);
+TCPClientSock __tcp_client_create(const char serv_ip[IPV4_ADDRLEN],u16        serv_port,bool       is_nonblocking);
 option __tcp_client_initSocket(TCPClientSock *sock);
 option __tcp_client_connect(TCPClientSock *sock);
 option __tcp_client_streamCreate(TCPClientSock *sock, size_t read_bfsize, size_t write_bfsize);
@@ -46,11 +46,11 @@ option __tcp_client_initSocket(TCPClientSock *sock){
     return noerropt;
 }
 
-TCPClientSock __tcp_client_create(const char serv_ip[IPV4_ADDRLEN],u16        serv_port,bool       is_blocking){
+TCPClientSock __tcp_client_create(const char serv_ip[IPV4_ADDRLEN],u16        serv_port,bool       is_nonblocking){
     var out = (TCPClientSock){
         .servaddr = {
             .sin_addr = {inet_addr(serv_ip)},        .sin_family = AF_INET,        .sin_port = htons(serv_port)
-        },    .ip = "",    .port = serv_port,    .is_blocking = is_blocking
+        },    .ip = "",    .port = serv_port,    .is_blocking = !is_nonblocking
     };
     strcpy(out.ip, serv_ip);
     return out;

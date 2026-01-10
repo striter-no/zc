@@ -1,5 +1,6 @@
 #ifndef ASYNC_POLLING_HEADER
 #include <mds/std/async/async_api.h>
+#include <mds/std/_preincl/defer.h>
 #include <mds/std/io/polling.h>
 #include <mds/std/containers/table.h>
 

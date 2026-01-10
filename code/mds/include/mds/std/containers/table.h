@@ -44,6 +44,7 @@ option __kvtable_shallow_set(kvtable *kt, variable key, variable val){
         try(__array_shpushback(&kt->keys, key));
         try(__array_shpushback(&kt->values, val));
         kt->len++;
+        fprintf(stderr, "shallow set new\n");
     } else {
         var valptr = ((variable*)try(__array_refat(&kt->values, inx.size)).data);
         var keyptr = ((variable*)try(__array_refat(&kt->keys, inx.size)).data);
@@ -52,6 +53,7 @@ option __kvtable_shallow_set(kvtable *kt, variable key, variable val){
         
         *keyptr = shcopyvar(key);
         *valptr = shcopyvar(val);
+        fprintf(stderr, "shallow set replace\n");
     }
     return noerropt;
 }
@@ -100,11 +102,13 @@ option __kvtable_sets(kvtable *kt, const char *_key, variable val){
 option __kvtable_delat(kvtable *kt, variable key){
     var inx = try(__array_index(&kt->keys, key));
     if (inx.size != -1){
+        fprintf(stderr, "delat: %zx (len: %zu)", inx.size, kt->len);
         var valptr = ((variable*)try(__array_refat(&kt->values, inx.size)).data);
         var keyptr = ((variable*)try(__array_refat(&kt->keys, inx.size)).data);
         delvar(valptr);
         delvar(keyptr);
-
+        kt->keys.len--;
+        kt->values.len--;
         kt->len--;
         return noerropt;
     }

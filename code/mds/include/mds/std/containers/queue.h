@@ -11,6 +11,8 @@ typedef struct {
 queue __queue_new();
 option __queue_top(queue q);
 option __queue_push(queue *q, variable vr);
+option __queue_spush(queue *q, variable vr);
+option __queue_spop(queue *q);
 option __queue_pop(queue *q);
 void __queue_dfclean(queue *q, void (^_defer)(variable *vr));
 option __queue_free(queue *q);
@@ -24,6 +26,21 @@ option __queue_pop(queue *q){
     ));
 
     try(__array_delat(&q->data, 0));
+    q->len--;
+
+    return opt_var(nv(
+        q->len
+    ));
+}
+
+option __queue_spop(queue *q){
+    if (!q) throw("Queue failed to push, ptr is NULL", "Queue.Pop.Ptr.IsNULL", -1);
+    
+    if (q->data.len == 0) return opt_var(nv(
+        -1
+    ));
+
+    try(__array_shdelat(&q->data, 0));
     q->len--;
 
     return opt_var(nv(
@@ -63,6 +80,14 @@ option __queue_push(queue *q, variable vr){
     if (!q) throw("Queue failed to push, ptr is NULL", "Queue.Push.Ptr.IsNULL", -1);
     
     try(__array_pushback(&q->data, vr));
+    q->len++;
+    return noerropt;
+}
+
+option __queue_spush(queue *q, variable vr){
+    if (!q) throw("Queue failed to push, ptr is NULL", "Queue.Push.Ptr.IsNULL", -1);
+    
+    try(__array_shpushback(&q->data, vr));
     q->len++;
     return noerropt;
 }

@@ -56,6 +56,8 @@ typedef struct {
     void   (*dfclean)(queue *q, void (^_defer)(variable *vr));
     option (*push)(queue *q, variable vr);
     option (*pop)(queue *q);
+    option (*spush)(queue *q, variable vr);
+    option (*spop)(queue *q);
     option (*top)(queue q);
 } std_queue;
 std_queue __queue_struct;
@@ -91,6 +93,8 @@ void __queue_setup(){
     __queue_struct.dfclean = __queue_dfclean;
     __queue_struct.push = __queue_push;
     __queue_struct.pop = __queue_pop;
+    __queue_struct.spush = __queue_spush;
+    __queue_struct.spop = __queue_spop;
     __queue_struct.top = __queue_top;
 }
 

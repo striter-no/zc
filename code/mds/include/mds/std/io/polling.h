@@ -57,10 +57,10 @@ option __epoller_add(epoller *eplr, int fd_to_add, u32 events, void *dataptr){
     cli->data_ptr = dataptr;
     cli->act_events = events;
 
-    fprintf(stderr, "new cli...\n");
     try(__kvtable_shallow_set(&eplr->clients, nv(fd_to_add), mvar(
         cli, sizeof(epoller_cli), true
     )));
+    fprintf(stderr, "polling <- new %d\n", fd_to_add);
     return noerropt;
 }
 
@@ -109,7 +109,7 @@ option __epoller_modify(epoller *eplr, int fd_to_mod, u32 new_events, void *data
     epoller_cli *cli = ((variable*)(try(__kvtable_refat(&eplr->clients, nv(fd_to_mod))).data))->data;
     cli->data_ptr = dataptr;
     cli->act_events = new_events;
-
+    
     return noerropt;
 }
 
@@ -132,14 +132,21 @@ option __epoller_delete(epoller *eplr, int fd_to_del){
     epoller_cli *cli = ((variable*)(try(__kvtable_refat(&eplr->clients, nv(fd_to_del))).data))->data;
     try(absa->free(absa->real, cli));
     __kvtable_delat(&eplr->clients, nv(fd_to_del));
-
+    fprintf(stderr, "polling <- deleting %d\n", fd_to_del);
     return noerropt;
 }
 
 option __epoller_close(epoller *eplr){
+    if (!eplr) throw(
+        "Std.IO.Epoll: Cannot close epoller, eplr ptr is NULL",
+        "Std.IO.Epoll.Close.Eplr.Ptr.IsNULL",
+        1
+    );
+
     AbstractAllocator *absa = try(global.get(".absa")).data;
     __kvtable_dfclean(&eplr->clients, NULL, ^(variable *v){
-        absa->free(absa->real, v->data);
+        if (v && v->data)
+            absa->free(absa->real, v->data);
     });
     __kvtable_free(&eplr->clients);
     close(eplr->epfd);
